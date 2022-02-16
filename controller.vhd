@@ -40,9 +40,10 @@ entity controller is
         --begin_coeff2op  : out std_logic;
         --flag_coeff2op   : out std_logic;
         flag_data2op   : out std_logic;
-        data2op         : out std_logic_vector(7 downto 0)
+        data2op         : out std_logic_vector(7 downto 0);
         --begin_input2op  : out std_logic;
         --input2op        : out std_logic_vector(7 downto 0)
+        address2op      : out std_logic_vector(5 downto 0)
     );
 
 end controller;
@@ -195,11 +196,17 @@ begin
             end if;
         
         when s_max => 
+            load_en <= '0'; 
+            op_en <= '0';   
+            store_en <= '0';
             max_en <= '1';
             avg_en <= '0';
             state_nxt <= s_avg; 
             
         when s_avg => 
+            load_en <= '0'; 
+            op_en <= '0';   
+            store_en <= '0';
             max_en <= '0';
             avg_en <= '1';
             state_nxt <= s_input2reg;
@@ -299,53 +306,55 @@ begin
     if op_en ='1' then 
         start_count <= '1'; --contrl the op counter
         if data2op_done = '0' then
+            flag_data2op <= '0';
             case counter is 
-                when "000001" => data2op <= "0" & coeff01; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000010" => data2op <= "0" & coeff02; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000011" => data2op <= "0" & coeff03; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000100" => data2op <= "0" & coeff04; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000101" => data2op <= "0" & coeff05; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000110" => data2op <= "0" & coeff06; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "000111" => data2op <= "0" & coeff07; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001000" => data2op <= "0" & coeff08; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001001" => data2op <= "0" & coeff09; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001010" => data2op <= "0" & coeff10; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001011" => data2op <= "0" & coeff11; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001100" => data2op <= "0" & coeff12; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001101" => data2op <= "0" & coeff13; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001110" => data2op <= "0" & coeff14; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "001111" => data2op <= "0" & coeff15; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010000" => data2op <= "0" & coeff16; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010001" => data2op <= "0" & coeff17; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010010" => data2op <= "0" & coeff18; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010011" => data2op <= "0" & coeff19; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010100" => data2op <= "0" & coeff20; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010101" => data2op <= "0" & coeff21; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010110" => data2op <= "0" & coeff22; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "010111" => data2op <= "0" & coeff23; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011000" => data2op <= "0" & coeff24; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011001" => data2op <= "0" & coeff25; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011010" => data2op <= "0" & coeff26; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011011" => data2op <= "0" & coeff27; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011100" => data2op <= "0" & coeff28; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011101" => data2op <= "0" & coeff29; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011110" => data2op <= "0" & coeff30; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "011111" => data2op <= "0" & coeff31; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100000" => data2op <= "0" & coeff32; counter_nxt <= counter + "000001"; flag_data2op <= '0';
+                when "000001" => data2op <= "0" & coeff01; counter_nxt <= counter + "000001"; address2op <= "000001";
+                when "000010" => data2op <= "0" & coeff02; counter_nxt <= counter + "000001"; address2op <= "000010";
+                when "000011" => data2op <= "0" & coeff03; counter_nxt <= counter + "000001"; address2op <= "000011";
+                when "000100" => data2op <= "0" & coeff04; counter_nxt <= counter + "000001"; address2op <= "000100";
+                when "000101" => data2op <= "0" & coeff05; counter_nxt <= counter + "000001"; address2op <= "000101";
+                when "000110" => data2op <= "0" & coeff06; counter_nxt <= counter + "000001"; address2op <= "000110";
+                when "000111" => data2op <= "0" & coeff07; counter_nxt <= counter + "000001"; address2op <= "000111";
+                when "001000" => data2op <= "0" & coeff08; counter_nxt <= counter + "000001"; address2op <= "001000";
+                when "001001" => data2op <= "0" & coeff09; counter_nxt <= counter + "000001"; address2op <= "001001";
+                when "001010" => data2op <= "0" & coeff10; counter_nxt <= counter + "000001"; address2op <= "001010";
+                when "001011" => data2op <= "0" & coeff11; counter_nxt <= counter + "000001"; address2op <= "001011";
+                when "001100" => data2op <= "0" & coeff12; counter_nxt <= counter + "000001"; address2op <= "001100";
+                when "001101" => data2op <= "0" & coeff13; counter_nxt <= counter + "000001"; address2op <= "001101";
+                when "001110" => data2op <= "0" & coeff14; counter_nxt <= counter + "000001"; address2op <= "001110";
+                when "001111" => data2op <= "0" & coeff15; counter_nxt <= counter + "000001"; address2op <= "001111";
+                when "010000" => data2op <= "0" & coeff16; counter_nxt <= counter + "000001"; address2op <= "010000";
+                when "010001" => data2op <= "0" & coeff17; counter_nxt <= counter + "000001"; address2op <= "010001";
+                when "010010" => data2op <= "0" & coeff18; counter_nxt <= counter + "000001"; address2op <= "010010";
+                when "010011" => data2op <= "0" & coeff19; counter_nxt <= counter + "000001"; address2op <= "010011";
+                when "010100" => data2op <= "0" & coeff20; counter_nxt <= counter + "000001"; address2op <= "010100";
+                when "010101" => data2op <= "0" & coeff21; counter_nxt <= counter + "000001"; address2op <= "010101";
+                when "010110" => data2op <= "0" & coeff22; counter_nxt <= counter + "000001"; address2op <= "010110";
+                when "010111" => data2op <= "0" & coeff23; counter_nxt <= counter + "000001"; address2op <= "010111";
+                when "011000" => data2op <= "0" & coeff24; counter_nxt <= counter + "000001"; address2op <= "011000";
+                when "011001" => data2op <= "0" & coeff25; counter_nxt <= counter + "000001"; address2op <= "011001";
+                when "011010" => data2op <= "0" & coeff26; counter_nxt <= counter + "000001"; address2op <= "011010";
+                when "011011" => data2op <= "0" & coeff27; counter_nxt <= counter + "000001"; address2op <= "011011";
+                when "011100" => data2op <= "0" & coeff28; counter_nxt <= counter + "000001"; address2op <= "011100";
+                when "011101" => data2op <= "0" & coeff29; counter_nxt <= counter + "000001"; address2op <= "011101";
+                when "011110" => data2op <= "0" & coeff30; counter_nxt <= counter + "000001"; address2op <= "011110";
+                when "011111" => data2op <= "0" & coeff31; counter_nxt <= counter + "000001"; address2op <= "011111";
+                when "100000" => data2op <= "0" & coeff32; counter_nxt <= counter + "000001"; address2op <= "100000";
                
-                when "100001" => data2op <= input01; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100010" => data2op <= input02; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100011" => data2op <= input03; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100100" => data2op <= input04; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100101" => data2op <= input05; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100110" => data2op <= input06; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "100111" => data2op <= input07; counter_nxt <= counter + "000001"; flag_data2op <= '0';
-                when "101000" => data2op <= input08; counter_nxt <= "000001"; flag_data2op <= '1';             
+                when "100001" => data2op <= input01; counter_nxt <= counter + "000001"; address2op <= "100001";
+                when "100010" => data2op <= input02; counter_nxt <= counter + "000001"; address2op <= "100010";
+                when "100011" => data2op <= input03; counter_nxt <= counter + "000001"; address2op <= "100011";
+                when "100100" => data2op <= input04; counter_nxt <= counter + "000001"; address2op <= "100100";
+                when "100101" => data2op <= input05; counter_nxt <= counter + "000001"; address2op <= "100101";
+                when "100110" => data2op <= input06; counter_nxt <= counter + "000001"; address2op <= "100110";
+                when "100111" => data2op <= input07; counter_nxt <= counter + "000001"; address2op <= "100111";
+                when "101000" => data2op <= input08; counter_nxt <= "000001"; address2op <= "101000";             
             end case;
         else 
-            data2op <= "000000"; 
+            data2op <= (others => '0'); 
             counter_nxt <= "000001";
             flag_data2op <= '1';
+            address2op <= (others => '0');
         end if;
     else 
         --begin_coeff2op <= '0';
@@ -355,37 +364,7 @@ begin
 
 end process;
 
---op_in: process(op_en_in, input2op_done, counter_in, input01, input02, input03, input04, input05, input06, input07, input08)
---begin 
---    if op_en_in ='1' then 
---        begin_coeff2op <= '0'; --out signal
---        begin_input2op <= '1'; --out signal
---        start_co <= '0';
---        start_in <= '1';
---        if input2op_done = '0' then 
---            case counter_in is 
---                when "0001" => input2op <= input01; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0010" => input2op <= input02; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0011" => input2op <= input03; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0100" => input2op <= input04; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0101" => input2op <= input05; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0110" => input2op <= input06; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "0111" => input2op <= input07; counter_in_nxt <= counter_in + "0001"; flag_input2op <= '0';
---                when "1000" => input2op <= input08; counter_in_nxt <= "0001"; flag_input2op <= '1';            
---            end case;
---        else
---            input2op <= "00000000";
---            counter_in_nxt <= "0001"; 
---            flag_input2op <= '0';
---        end if;
---    else 
---        begin_coeff2op <= '0'; --out signal
---        begin_input2op <= '0'; --out signal
---        start_co <= '0';
---        start_in <= '0';
---    end if;
 
---end process;
 
 --------------------------------------------------------------------------------------------------------------------------------------------------
 

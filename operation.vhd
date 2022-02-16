@@ -9,16 +9,17 @@ entity operation is
         
         --begin_coeff2op  : in std_logic;
         flag_data2op    : in std_logic;
-        data2op         : in std_logic_vector(6 downto 0);
-        
+        data2op         : in std_logic_vector(7 downto 0);
+        address2op      : in std_logic_vector(5 downto 0);
  ---------------------------------------------------------------- 
+        -- to the controller--------------------------------------
         data2op_done    : out std_logic; 
         
         op_done         : out std_logic;
         
         out_ready       : out std_logic;
         result          : out std_logic_vector(16 downto 0);
-        
+        --to the compare---------------------------------------------
         compare_done    : out std_logic;
         compare_out     : out std_logic_vector(16 downto 0)
         
@@ -34,38 +35,38 @@ architecture Behavioral of operation is
     signal column       : std_logic_vector(1 downto 0);
     signal column_nxt   : std_logic_vector(1 downto 0);
     
-    signal coeff01      : std_logic_vector(6 downto 0);
-    signal coeff02      : std_logic_vector(6 downto 0);
-    signal coeff03      : std_logic_vector(6 downto 0);
-    signal coeff04      : std_logic_vector(6 downto 0);
-    signal coeff05      : std_logic_vector(6 downto 0);
-    signal coeff06      : std_logic_vector(6 downto 0);
-    signal coeff07      : std_logic_vector(6 downto 0);
-    signal coeff08      : std_logic_vector(6 downto 0);
-    signal coeff09      : std_logic_vector(6 downto 0);
-    signal coeff10      : std_logic_vector(6 downto 0);
-    signal coeff11      : std_logic_vector(6 downto 0);
-    signal coeff12      : std_logic_vector(6 downto 0);
-    signal coeff13      : std_logic_vector(6 downto 0);
-    signal coeff14      : std_logic_vector(6 downto 0);
-    signal coeff15      : std_logic_vector(6 downto 0);
-    signal coeff16      : std_logic_vector(6 downto 0);
-    signal coeff17      : std_logic_vector(6 downto 0);
-    signal coeff18      : std_logic_vector(6 downto 0);
-    signal coeff19      : std_logic_vector(6 downto 0);
-    signal coeff20      : std_logic_vector(6 downto 0);
-    signal coeff21      : std_logic_vector(6 downto 0);
-    signal coeff22      : std_logic_vector(6 downto 0);
-    signal coeff23      : std_logic_vector(6 downto 0);
-    signal coeff24      : std_logic_vector(6 downto 0);
-    signal coeff25      : std_logic_vector(6 downto 0);
-    signal coeff26      : std_logic_vector(6 downto 0);
-    signal coeff27      : std_logic_vector(6 downto 0);
-    signal coeff28      : std_logic_vector(6 downto 0);
-    signal coeff29      : std_logic_vector(6 downto 0);
-    signal coeff30      : std_logic_vector(6 downto 0);
-    signal coeff31      : std_logic_vector(6 downto 0);
-    signal coeff32      : std_logic_vector(6 downto 0);
+    signal coeff01      : std_logic_vector(7 downto 0);
+    signal coeff02      : std_logic_vector(7 downto 0);
+    signal coeff03      : std_logic_vector(7 downto 0);
+    signal coeff04      : std_logic_vector(7 downto 0);
+    signal coeff05      : std_logic_vector(7 downto 0);
+    signal coeff06      : std_logic_vector(7 downto 0);
+    signal coeff07      : std_logic_vector(7 downto 0);
+    signal coeff08      : std_logic_vector(7 downto 0);
+    signal coeff09      : std_logic_vector(7 downto 0);
+    signal coeff10      : std_logic_vector(7 downto 0);
+    signal coeff11      : std_logic_vector(7 downto 0);
+    signal coeff12      : std_logic_vector(7 downto 0);
+    signal coeff13      : std_logic_vector(7 downto 0);
+    signal coeff14      : std_logic_vector(7 downto 0);
+    signal coeff15      : std_logic_vector(7 downto 0);
+    signal coeff16      : std_logic_vector(7 downto 0);
+    signal coeff17      : std_logic_vector(7 downto 0);
+    signal coeff18      : std_logic_vector(7 downto 0);
+    signal coeff19      : std_logic_vector(7 downto 0);
+    signal coeff20      : std_logic_vector(7 downto 0);
+    signal coeff21      : std_logic_vector(7 downto 0);
+    signal coeff22      : std_logic_vector(7 downto 0);
+    signal coeff23      : std_logic_vector(7 downto 0);
+    signal coeff24      : std_logic_vector(7 downto 0);
+    signal coeff25      : std_logic_vector(7 downto 0);
+    signal coeff26      : std_logic_vector(7 downto 0);
+    signal coeff27      : std_logic_vector(7 downto 0);
+    signal coeff28      : std_logic_vector(7 downto 0);
+    signal coeff29      : std_logic_vector(7 downto 0);
+    signal coeff30      : std_logic_vector(7 downto 0);
+    signal coeff31      : std_logic_vector(7 downto 0);
+    signal coeff32      : std_logic_vector(7 downto 0);
 
     signal input01      : std_logic_vector(7 downto 0);
     signal input02      : std_logic_vector(7 downto 0);
@@ -96,7 +97,7 @@ architecture Behavioral of operation is
 begin
 
 --state ctrl-----------------------------------
-process (clk, reset, column_nxt)
+process (clk, reset, column_nxt, compare_nxt)
 begin
     if reset = '1' then 
         state_reg <= s_store; 
@@ -110,7 +111,17 @@ begin
 end process;
 
 -----------------------------------------
-process (state_reg, s_store, s_mult1, s_mult2, s_mult3, s_mult4, s_add, s_send_data, s_send_compare, column)
+process (state_reg, s_store, s_mult1, s_mult2, s_mult3, s_mult4, s_add, s_send_data, s_send_compare, column, flag_data2op,
+        input01, input02, input03, input04, input05, input06, input07, input08,
+        coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
+        coeff11, coeff12, coeff13, coeff14, coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
+        coeff21, coeff22, coeff23, coeff24, coeff25, coeff26, coeff27, coeff28, coeff29, coeff30, 
+        coeff31, coeff32, 
+        output_reg1, output_reg2, output_reg3, output_reg4, output_reg5, output_reg6, output_reg7, output_reg8,
+        output1, output2, output3, output4, 
+        compare
+
+)
 begin 
     case state_reg is 
         when s_store => 
@@ -232,18 +243,59 @@ begin
 
 end process;
 
+----------------------------------------------------------------------------------------
 
-
-
-
-store_data : process(start_store, data2op)
+store_data : process(start_store, address2op, data2op)
 begin 
-    
+    if start_store = '1' then
+        case address2op is 
+            when "000001" =>  coeff01 <= data2op; data2op_done <= '0';
+            when "000010" =>  coeff02 <= data2op;
+            when "000011" =>  coeff03 <= data2op;
+            when "000100" =>  coeff04 <= data2op;
+            when "000101" =>  coeff05 <= data2op;
+            when "000110" =>  coeff06 <= data2op;
+            when "000111" =>  coeff07 <= data2op;
+            when "001000" =>  coeff08 <= data2op;
+            when "001001" =>  coeff09 <= data2op;
+            when "001010" =>  coeff10 <= data2op;
+            when "001011" =>  coeff11 <= data2op;
+            when "001100" =>  coeff12 <= data2op;
+            when "001101" =>  coeff13 <= data2op;
+            when "001110" =>  coeff14 <= data2op;
+            when "001111" =>  coeff15 <= data2op;
+            when "010000" =>  coeff16 <= data2op;
+            when "010001" =>  coeff17 <= data2op;
+            when "010010" =>  coeff18 <= data2op;
+            when "010011" =>  coeff19 <= data2op;
+            when "010100" =>  coeff20 <= data2op;
+            when "010101" =>  coeff21 <= data2op;
+            when "010110" =>  coeff22 <= data2op;
+            when "010111" =>  coeff23 <= data2op;
+            when "011000" =>  coeff24 <= data2op;
+            when "011001" =>  coeff25 <= data2op;
+            when "011010" =>  coeff26 <= data2op;
+            when "011011" =>  coeff27 <= data2op;
+            when "011100" =>  coeff28 <= data2op;
+            when "011101" =>  coeff29 <= data2op;
+            when "011110" =>  coeff30 <= data2op;
+            when "011111" =>  coeff31 <= data2op;
+            when "100000" =>  coeff32 <= data2op;
+                                      
+            when "100001" =>  input01 <= data2op;
+            when "100010" =>  input02 <= data2op;
+            when "100011" =>  input03 <= data2op;
+            when "100100" =>  input04 <= data2op;
+            when "100101" =>  input05 <= data2op;
+            when "100110" =>  input06 <= data2op;
+            when "100111" =>  input07 <= data2op;
+            when "101000" =>  input08 <= data2op; data2op_done <= '1'; 
+        end case;
+    else 
+        data2op_done <= '1';
+    end if;
 
 end process; 
-
-
-
 
 
 
