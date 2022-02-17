@@ -290,6 +290,7 @@ begin
             when "100110" =>  input06 <= data2op;
             when "100111" =>  input07 <= data2op;
             when "101000" =>  input08 <= data2op; data2op_done <= '1'; 
+            when others => input01 <= (others => '0'); data2op_done <= '1';
         end case;
     else 
         data2op_done <= '1';

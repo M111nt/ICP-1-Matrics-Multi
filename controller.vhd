@@ -130,6 +130,7 @@ begin
     case state_reg is 
         when s_coeff2mem => 
             ldcoeff_enable <= '1'; 
+            ldinput_enable <= '0'; 
             if ldcoeff_done = '1' then 
                 state_nxt <= s_input2reg;
             else 
@@ -137,6 +138,7 @@ begin
             end if;
             
         when s_input2reg =>
+            ldcoeff_enable <= '0';
             ldinput_enable <= '1'; 
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
@@ -252,6 +254,7 @@ begin
             when "011110" => coeff30 <= coeff; flag_coeff <= '0';
             when "011111" => coeff31 <= coeff; flag_coeff <= '0';
             when "100000" => coeff32 <= coeff; flag_coeff <= '1';
+            when others => coeff_test <= (others => '0'); flag_coeff <= '1';
         end case;
     else 
         coeff_test <= (others => '0');
@@ -273,6 +276,7 @@ begin
             when "0110" => input06 <= input; flag_input <= '0';
             when "0111" => input07 <= input; flag_input <= '0';
             when "1000" => input08 <= input; flag_input <= '1';
+            when others => input_test <= (others =>'0'); flag_input <= '1';
         end case;
     else 
         input_test <= (others => '0'); 
@@ -348,13 +352,14 @@ begin
                 when "100101" => data2op <= input05; counter_nxt <= counter + "000001"; address2op <= "100101";
                 when "100110" => data2op <= input06; counter_nxt <= counter + "000001"; address2op <= "100110";
                 when "100111" => data2op <= input07; counter_nxt <= counter + "000001"; address2op <= "100111";
-                when "101000" => data2op <= input08; counter_nxt <= "000001"; address2op <= "101000";             
+                when "101000" => data2op <= input08; counter_nxt <= "000001"; address2op <= "101000"; 
+                when others => data2op <= (others => '0'); counter_nxt <= "000001"; address2op <= "000001";        
             end case;
         else 
             data2op <= (others => '0'); 
             counter_nxt <= "000001";
             flag_data2op <= '1';
-            address2op <= (others => '0');
+            address2op <= "000001";
         end if;
     else 
         --begin_coeff2op <= '0';
