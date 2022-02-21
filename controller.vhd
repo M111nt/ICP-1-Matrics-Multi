@@ -152,10 +152,8 @@ process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_coeff2mem; 
-        column <= "00";
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-        column <= column_nxt;
     end if;         
 end process;
 
@@ -169,6 +167,7 @@ begin
         when s_coeff2mem => 
             ldcoeff_enable <= '1'; 
             ldinput_enable <= '0'; 
+            --column <= "00";
             column_nxt <= "00";
             if ldcoeff_done = '1' then 
                 state_nxt <= s_input2reg;
@@ -179,14 +178,7 @@ begin
         when s_input2reg =>
             ldcoeff_enable <= '0';
             ldinput_enable <= '1'; 
-            if column = "11" then
-                column_nxt <= "00";
-            elsif column = "00" then 
-                column_nxt <= "00";
-            else
-                column_nxt <= column + 1;
-            end if;
-            
+            column <= column_nxt;   --control the result of mean         
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
             else
@@ -199,7 +191,6 @@ begin
             store_en <= '0';
             max_en <= '0';
             avg_en <= '0';
-            
             if start = '1' then 
                 state_nxt <= s_load; 
             else
@@ -251,6 +242,7 @@ begin
                         result4_2store <= result4_reg;
                         if store_done = '1' then
                             state_nxt <= s_input2reg;
+                            column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 
                         end if;
@@ -263,6 +255,7 @@ begin
                         result4_2store <= result4_reg;
                         if store_done = '1' then
                             state_nxt <= s_input2reg;
+                            column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 
                         end if;
@@ -274,6 +267,7 @@ begin
                         result4_2store <= result4_reg;
                         if store_done = '1' then
                             state_nxt <= s_input2reg;
+                            column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 
                         end if;
@@ -284,9 +278,10 @@ begin
                         result3_2store <= result3_reg;
                         result4_2store <= result4_reg;
                         if store_done = '1' then
-                            state_nxt <= s_input2reg;
-                        else 
                             state_nxt <= s_max;
+                            column_nxt <= "00";
+                        else 
+                            state_nxt <= s_store;
                         end if; 
                 end case;
             else
