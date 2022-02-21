@@ -38,6 +38,7 @@ state_machine: process (state_reg, s_compare, s_send, reg)
 begin 
     case state_reg is 
         when s_compare =>
+            compare_result <= (others => '0');
             if max_en = '1' then 
                 state_nxt <= s_send;
             else 

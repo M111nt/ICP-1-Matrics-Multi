@@ -18,11 +18,17 @@ entity controller is
     --ld input--------------------------------------------------------------
         ctrl_input      : in std_logic_vector(3 downto 0);
         input           : in std_logic_vector(7 downto 0);
-    --number to op---------------------------------------------------------    
-        data2op_done    : in std_logic; 
+    --number from op---------------------------------------------------------    
+        data2op_done    : in std_logic; --finish storing data in op
+
+        out_ready       : in std_logic; --return 4 results to controller
+        result1         : in std_logic_vector(16 downto 0);
+        result2         : in std_logic_vector(16 downto 0);
+        result3         : in std_logic_vector(16 downto 0);
+        result4         : in std_logic_vector(16 downto 0);    
         
 ------------------------------------------------------------------------        
-        --column          : in std_logic_vector(2 downto 0);
+        
         ldcoeff_enable  : out std_logic;
         ldinput_enable  : out std_logic; 
         load_en         : out std_logic;
@@ -43,7 +49,12 @@ entity controller is
         data2op         : out std_logic_vector(7 downto 0);
         --begin_input2op  : out std_logic;
         --input2op        : out std_logic_vector(7 downto 0)
-        address2op      : out std_logic_vector(5 downto 0)
+        address2op      : out std_logic_vector(5 downto 0);
+    ----------------------------------------------------------------
+        result1_2store  : out std_logic_vector(16 downto 0);
+        result2_2store  : out std_logic_vector(16 downto 0);
+        result3_2store  : out std_logic_vector(16 downto 0);
+        result4_2store  : out std_logic_vector(16 downto 0)  
     );
 
 end controller;
@@ -110,8 +121,30 @@ architecture Behavioral of controller is
     --signal counter_in, counter_in_nxt   : std_logic_vector(3 downto 0);
     signal start_count                  : std_logic;
     --signal op_en_in                     : std_logic;
----------------------------------------------------------------
+--store data-------------------------------------------------------------
+    signal column       : std_logic_vector(1 downto 0);
+    signal column_nxt   : std_logic_vector(1 downto 0);
+    
+    --signal column_ctrl  : std_logic;
+    signal result1_reg  : std_logic_vector(16 downto 0);
+    signal result2_reg  : std_logic_vector(16 downto 0);
+    signal result3_reg  : std_logic_vector(16 downto 0);
+    signal result4_reg  : std_logic_vector(16 downto 0);
+    
+    
+    
+    
+    signal mean1    : std_logic_vector(16 downto 0);
+    signal mean2    : std_logic_vector(16 downto 0);
+    signal mean3    : std_logic_vector(16 downto 0);
+    signal mean4    : std_logic_vector(16 downto 0);
+    
+--mean--------------------------------------------------------------------
 
+    signal mean_reg : std_logic_vector(20 downto 0);
+    signal mean_out : std_logic_vector(20 downto 0);    
+    
+------------------------------------------------------------------------
 begin
 
 --state ctrl-----------------------------------
@@ -119,18 +152,24 @@ process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_coeff2mem; 
+        column <= "00";
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
+        column <= column_nxt;
     end if;         
 end process;
 
 --state machine-------------------------------------
-state_machine:process (state_reg, start, s_coeff2mem, ldcoeff_done, s_input2reg, ldinput_done, s_idle, s_load, load_done, s_op, op_done, s_store, store_done, s_max, s_avg)
+state_machine:process (state_reg, start, 
+        s_coeff2mem, ldcoeff_done, s_input2reg, ldinput_done, s_idle, s_load, load_done, s_op, op_done, s_store, store_done, s_max, s_avg, 
+        column, column_nxt
+        )
 begin
     case state_reg is 
         when s_coeff2mem => 
             ldcoeff_enable <= '1'; 
             ldinput_enable <= '0'; 
+            column_nxt <= "00";
             if ldcoeff_done = '1' then 
                 state_nxt <= s_input2reg;
             else 
@@ -140,6 +179,14 @@ begin
         when s_input2reg =>
             ldcoeff_enable <= '0';
             ldinput_enable <= '1'; 
+            if column = "11" then
+                column_nxt <= "00";
+            elsif column = "00" then 
+                column_nxt <= "00";
+            else
+                column_nxt <= column + 1;
+            end if;
+            
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
             else
@@ -152,6 +199,7 @@ begin
             store_en <= '0';
             max_en <= '0';
             avg_en <= '0';
+            
             if start = '1' then 
                 state_nxt <= s_load; 
             else
@@ -188,14 +236,67 @@ begin
             store_en <= '1';
             max_en <= '0';
             avg_en <= '0';
-            if store_done = '1' then
-------------if then
-     --       else 
-       --     end if;
-                state_nxt <= s_max; 
-            else 
-                state_nxt <= s_max;
+            if out_ready = '1' then 
+                result1_reg <= result1;
+                result2_reg <= result2;
+                result3_reg <= result3;
+                result4_reg <= result4;
+
+                case column is 
+                    when "00" =>
+                        mean1 <= result1_reg;
+                        result1_2store <= result1_reg;
+                        result2_2store <= result2_reg;
+                        result3_2store <= result3_reg;
+                        result4_2store <= result4_reg;
+                        if store_done = '1' then
+                            state_nxt <= s_input2reg;
+                        else 
+                            state_nxt <= s_store; 
+                        end if;
+
+                    when "01" =>
+                        mean2 <= result2_reg; 
+                        result1_2store <= result1_reg;
+                        result2_2store <= result2_reg;
+                        result3_2store <= result3_reg;
+                        result4_2store <= result4_reg;
+                        if store_done = '1' then
+                            state_nxt <= s_input2reg;
+                        else 
+                            state_nxt <= s_store; 
+                        end if;
+                    when "10" =>
+                        mean3 <= result3_reg;
+                        result1_2store <= result1_reg;
+                        result2_2store <= result2_reg;
+                        result3_2store <= result3_reg;
+                        result4_2store <= result4_reg;
+                        if store_done = '1' then
+                            state_nxt <= s_input2reg;
+                        else 
+                            state_nxt <= s_store; 
+                        end if;
+                    when "11" =>
+                        mean4 <= result4_reg;
+                        result1_2store <= result1_reg;
+                        result2_2store <= result2_reg;
+                        result3_2store <= result3_reg;
+                        result4_2store <= result4_reg;
+                        if store_done = '1' then
+                            state_nxt <= s_input2reg;
+                        else 
+                            state_nxt <= s_max;
+                        end if; 
+                end case;
+            else
+                result1_2store <= (others => '0');
+                result2_2store <= (others => '0');
+                result3_2store <= (others => '0');
+                result4_2store <= (others => '0');
             end if;
+            
+
         
         when s_max => 
             load_en <= '0'; 
@@ -211,6 +312,8 @@ begin
             store_en <= '0';
             max_en <= '0';
             avg_en <= '1';
+            mean_reg <= mean1 + mean2 + mean3 + mean4; 
+            mean_out <= "00" & mean_reg(20 downto 2);
             state_nxt <= s_input2reg;
     end case;
     
@@ -368,6 +471,8 @@ begin
     end if;
 
 end process;
+
+
 
 
 

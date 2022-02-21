@@ -18,7 +18,11 @@ entity operation is
         op_done         : out std_logic;
         
         out_ready       : out std_logic;
-        result          : out std_logic_vector(16 downto 0);
+        result1         : out std_logic_vector(16 downto 0);
+        result2         : out std_logic_vector(16 downto 0);
+        result3         : out std_logic_vector(16 downto 0);
+        result4         : out std_logic_vector(16 downto 0);
+
         --to the compare---------------------------------------------
         compare_done    : out std_logic;
         compare_out     : out std_logic_vector(16 downto 0)
@@ -35,6 +39,7 @@ architecture Behavioral of operation is
     signal column       : std_logic_vector(1 downto 0);
     signal column_nxt   : std_logic_vector(1 downto 0);
     
+    signal input_test   : std_logic_vector(7 downto 0);
     signal coeff01      : std_logic_vector(7 downto 0);
     signal coeff02      : std_logic_vector(7 downto 0);
     signal coeff03      : std_logic_vector(7 downto 0);
@@ -120,8 +125,8 @@ process (state_reg, s_store, s_mult1, s_mult2, s_mult3, s_mult4, s_add, s_send_d
         output_reg1, output_reg2, output_reg3, output_reg4, output_reg5, output_reg6, output_reg7, output_reg8,
         output1, output2, output3, output4, 
         compare
+        )
 
-)
 begin 
     case state_reg is 
         when s_store => 
@@ -190,9 +195,9 @@ begin
             case column is 
                 when "00" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '1';
+                    out_ready <= '0';
                     column_nxt <= "01";
-                    result <= output1; 
+                    result1 <= output1; 
                     if compare < output1 then 
                         compare_nxt <= output1; 
                     else
@@ -201,9 +206,9 @@ begin
                     
                 when "01" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '1'; 
+                    out_ready <= '0'; 
                     column_nxt <= "10";  
-                    result <= output2;
+                    result2 <= output2;
                     if compare < output2 then 
                         compare_nxt <= output2;
                     else 
@@ -212,9 +217,9 @@ begin
                     
                 when "10" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '1'; 
+                    out_ready <= '0'; 
                     column_nxt <= "11"; 
-                    result <= output3;
+                    result3 <= output3;
                     if compare < output3 then 
                         compare_nxt <= output3;
                     else 
@@ -225,7 +230,7 @@ begin
                     state_nxt <= s_send_compare;                    
                     out_ready <= '1';
                     column_nxt <= "00"; 
-                    result <= output4;  
+                    result4 <= output4;  
                     if compare < output4 then 
                         compare_nxt <= output4;
                     else 
@@ -234,6 +239,7 @@ begin
             end case;
         
         when s_send_compare => 
+            out_ready <= '0';
             op_done <= '1';
             compare_done <= '1'; 
             compare_out <= compare;
@@ -290,10 +296,11 @@ begin
             when "100110" =>  input06 <= data2op;
             when "100111" =>  input07 <= data2op;
             when "101000" =>  input08 <= data2op; data2op_done <= '1'; 
-            when others => input01 <= (others => '0'); data2op_done <= '1';
+            when others => input_test <= (others => '0'); data2op_done <= '1';
         end case;
     else 
-        data2op_done <= '1';
+        input_test <= (others => '0');
+        data2op_done <= '0';
     end if;
 
 end process; 
