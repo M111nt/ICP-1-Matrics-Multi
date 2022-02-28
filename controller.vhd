@@ -39,9 +39,9 @@ entity controller is
         avg_en          : out std_logic;   
 
     --ld coeff--------------------------------------------------------------       
-        flag_coeff      : out std_logic; 
+        --flag_coeff      : out std_logic; 
     --ld input--------------------------------------------------------------
-        flag_input      : out std_logic;
+        --flag_input      : out std_logic;
     --number to op----------------------------------------------------------    
         --begin_coeff2op  : out std_logic;
         --flag_coeff2op   : out std_logic;
@@ -320,43 +320,43 @@ ld_coeff: process(ldcoeff_enable, ctrl_coeff, coeff)
 begin 
     if ldcoeff_enable = '1' then 
         case ctrl_coeff is 
-            when "000001" => coeff01 <= coeff; flag_coeff <= '0'; --start, parity
-            when "000010" => coeff02 <= coeff; flag_coeff <= '0';
-            when "000011" => coeff03 <= coeff; flag_coeff <= '0';
-            when "000100" => coeff04 <= coeff; flag_coeff <= '0';
-            when "000101" => coeff05 <= coeff; flag_coeff <= '0';
-            when "000110" => coeff06 <= coeff; flag_coeff <= '0';
-            when "000111" => coeff07 <= coeff; flag_coeff <= '0';
-            when "001000" => coeff08 <= coeff; flag_coeff <= '0';
-            when "001001" => coeff09 <= coeff; flag_coeff <= '0';
-            when "001010" => coeff10 <= coeff; flag_coeff <= '0';
-            when "001011" => coeff11 <= coeff; flag_coeff <= '0';
-            when "001100" => coeff12 <= coeff; flag_coeff <= '0';
-            when "001101" => coeff13 <= coeff; flag_coeff <= '0';
-            when "001110" => coeff14 <= coeff; flag_coeff <= '0';
-            when "001111" => coeff15 <= coeff; flag_coeff <= '0';
-            when "010000" => coeff16 <= coeff; flag_coeff <= '0';
-            when "010001" => coeff17 <= coeff; flag_coeff <= '0';
-            when "010010" => coeff18 <= coeff; flag_coeff <= '0';
-            when "010011" => coeff19 <= coeff; flag_coeff <= '0';
-            when "010100" => coeff20 <= coeff; flag_coeff <= '0';
-            when "010101" => coeff21 <= coeff; flag_coeff <= '0';
-            when "010110" => coeff22 <= coeff; flag_coeff <= '0';
-            when "010111" => coeff23 <= coeff; flag_coeff <= '0';
-            when "011000" => coeff24 <= coeff; flag_coeff <= '0';
-            when "011001" => coeff25 <= coeff; flag_coeff <= '0';
-            when "011010" => coeff26 <= coeff; flag_coeff <= '0';
-            when "011011" => coeff27 <= coeff; flag_coeff <= '0';
-            when "011100" => coeff28 <= coeff; flag_coeff <= '0';
-            when "011101" => coeff29 <= coeff; flag_coeff <= '0';
-            when "011110" => coeff30 <= coeff; flag_coeff <= '0';
-            when "011111" => coeff31 <= coeff; flag_coeff <= '0';
-            when "100000" => coeff32 <= coeff; flag_coeff <= '1';
-            when others => coeff_test <= (others => '0'); flag_coeff <= '1';
+            when "000001" => coeff01 <= coeff; --flag_coeff <= '0'; --start, parity
+            when "000010" => coeff02 <= coeff; --flag_coeff <= '0';
+            when "000011" => coeff03 <= coeff; --flag_coeff <= '0';
+            when "000100" => coeff04 <= coeff; --flag_coeff <= '0';
+            when "000101" => coeff05 <= coeff; --flag_coeff <= '0';
+            when "000110" => coeff06 <= coeff; --flag_coeff <= '0';
+            when "000111" => coeff07 <= coeff; --flag_coeff <= '0';
+            when "001000" => coeff08 <= coeff; --flag_coeff <= '0';
+            when "001001" => coeff09 <= coeff; --flag_coeff <= '0';
+            when "001010" => coeff10 <= coeff; --flag_coeff <= '0';
+            when "001011" => coeff11 <= coeff; --flag_coeff <= '0';
+            when "001100" => coeff12 <= coeff; --flag_coeff <= '0';
+            when "001101" => coeff13 <= coeff; --flag_coeff <= '0';
+            when "001110" => coeff14 <= coeff; --flag_coeff <= '0';
+            when "001111" => coeff15 <= coeff; --flag_coeff <= '0';
+            when "010000" => coeff16 <= coeff; --flag_coeff <= '0';
+            when "010001" => coeff17 <= coeff; --flag_coeff <= '0';
+            when "010010" => coeff18 <= coeff; --flag_coeff <= '0';
+            when "010011" => coeff19 <= coeff; --flag_coeff <= '0';
+            when "010100" => coeff20 <= coeff; --flag_coeff <= '0';
+            when "010101" => coeff21 <= coeff; --flag_coeff <= '0';
+            when "010110" => coeff22 <= coeff; --flag_coeff <= '0';
+            when "010111" => coeff23 <= coeff; --flag_coeff <= '0';
+            when "011000" => coeff24 <= coeff; --flag_coeff <= '0';
+            when "011001" => coeff25 <= coeff; --flag_coeff <= '0';
+            when "011010" => coeff26 <= coeff; --flag_coeff <= '0';
+            when "011011" => coeff27 <= coeff; --flag_coeff <= '0';
+            when "011100" => coeff28 <= coeff; --flag_coeff <= '0';
+            when "011101" => coeff29 <= coeff; --flag_coeff <= '0';
+            when "011110" => coeff30 <= coeff; --flag_coeff <= '0';
+            when "011111" => coeff31 <= coeff; --flag_coeff <= '0';
+            when "100000" => coeff32 <= coeff; --flag_coeff <= '1';
+            when others => coeff_test <= (others => '0');--flag_coeff <= '1';
         end case;
     else 
         coeff_test <= (others => '0');
-        flag_coeff <= '0';
+        --flag_coeff <= '0';
     end if;
        
 end process;
@@ -366,19 +366,19 @@ ld_input: process(load_en, ctrl_input, input)
 begin 
     if load_en = '1' then 
         case ctrl_input is
-            when "0001" => input01 <= input; flag_input <= '0';
-            when "0010" => input02 <= input; flag_input <= '0';
-            when "0011" => input03 <= input; flag_input <= '0';
-            when "0100" => input04 <= input; flag_input <= '0';
-            when "0101" => input05 <= input; flag_input <= '0';
-            when "0110" => input06 <= input; flag_input <= '0';
-            when "0111" => input07 <= input; flag_input <= '0';
-            when "1000" => input08 <= input; flag_input <= '1';
-            when others => input_test <= (others =>'0'); flag_input <= '1';
+            when "0001" => input01 <= input; --flag_input <= '0';
+            when "0010" => input02 <= input; --flag_input <= '0';
+            when "0011" => input03 <= input; --flag_input <= '0';
+            when "0100" => input04 <= input; --flag_input <= '0';
+            when "0101" => input05 <= input; --flag_input <= '0';
+            when "0110" => input06 <= input; --flag_input <= '0';
+            when "0111" => input07 <= input; --flag_input <= '0';
+            when "1000" => input08 <= input; --flag_input <= '1';
+            when others => input_test <= (others =>'0'); --flag_input <= '1';
         end case;
     else 
         input_test <= (others => '0'); 
-        flag_input <= '0'; 
+        --flag_input <= '0'; 
     end if;
 
 end process;
