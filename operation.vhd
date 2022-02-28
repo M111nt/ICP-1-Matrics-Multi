@@ -18,10 +18,10 @@ entity operation is
         op_done         : out std_logic;
         
         out_ready       : out std_logic;
-        result1         : out std_logic_vector(16 downto 0);
-        result2         : out std_logic_vector(16 downto 0);
-        result3         : out std_logic_vector(16 downto 0);
-        result4         : out std_logic_vector(16 downto 0);
+        result1         : out std_logic_vector(17 downto 0);
+        result2         : out std_logic_vector(17 downto 0);
+        result3         : out std_logic_vector(17 downto 0);
+        result4         : out std_logic_vector(17 downto 0);
 
         --to the compare---------------------------------------------
         compare_done    : out std_logic;

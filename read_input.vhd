@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use std.textio.all;
 
 
-entity read_coeff is
+entity read_input is
   generic (
         FILE_NAME: string ;
         INPUT_WIDTH: positive
@@ -16,9 +16,9 @@ entity read_coeff is
         input_sample:   out std_logic_vector(INPUT_WIDTH-1 downto 0)
         );
 
-end read_coeff;
+end read_input;
 
-architecture Behavioral of read_coeff is
+architecture Behavioral of read_input is
 
 begin
 

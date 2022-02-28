@@ -22,10 +22,10 @@ entity controller is
         data2op_done    : in std_logic; --finish storing data in op
 
         out_ready       : in std_logic; --return 4 results to controller
-        result1         : in std_logic_vector(16 downto 0);
-        result2         : in std_logic_vector(16 downto 0);
-        result3         : in std_logic_vector(16 downto 0);
-        result4         : in std_logic_vector(16 downto 0);    
+        result1         : in std_logic_vector(17 downto 0);
+        result2         : in std_logic_vector(17 downto 0);
+        result3         : in std_logic_vector(17 downto 0);
+        result4         : in std_logic_vector(17 downto 0);    
         
 ------------------------------------------------------------------------        
         
@@ -51,10 +51,10 @@ entity controller is
         --input2op        : out std_logic_vector(7 downto 0)
         address2op      : out std_logic_vector(5 downto 0);
     ----------------------------------------------------------------
-        result1_2store  : out std_logic_vector(16 downto 0);
-        result2_2store  : out std_logic_vector(16 downto 0);
-        result3_2store  : out std_logic_vector(16 downto 0);
-        result4_2store  : out std_logic_vector(16 downto 0)  
+        result1_2store  : out std_logic_vector(17 downto 0);
+        result2_2store  : out std_logic_vector(17 downto 0);
+        result3_2store  : out std_logic_vector(17 downto 0);
+        result4_2store  : out std_logic_vector(17 downto 0)  
     );
 
 end controller;
