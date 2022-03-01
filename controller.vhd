@@ -159,8 +159,10 @@ end process;
 
 --state machine-------------------------------------
 state_machine:process (state_reg, start, 
-        s_coeff2mem, ldcoeff_done, s_input2reg, ldinput_done, s_idle, s_load, load_done, s_op, op_done, s_store, store_done, s_max, s_avg, 
-        column, column_nxt
+        ldcoeff_done, ldinput_done, load_done, op_done, store_done, out_ready,
+        column, column_nxt, 
+        result1_reg, result2_reg, result3_reg, result4_reg, 
+        mean1, mean2, mean3, mean4, mean_reg
         )
 begin
     case state_reg is 
