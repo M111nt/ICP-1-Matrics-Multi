@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use ieee.std_logic_signed.all;
+use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
@@ -96,8 +96,8 @@ begin
 end process;
 
 --state machine--------------------------------------------
-process(state_reg, s_initial, s_load, s_keep, s_send, 
-        counter, address_reg, coeff_in, 
+process(state_reg, load_en, --s_initial, s_load, s_keep, s_send, 
+        counter, address_reg, send_ctr,
         coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
         coeff11, coeff12, coeff13, coeff14,coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
         coeff21, coeff22, coeff23, coeff24, coeff25, coeff26, coeff27, coeff28, coeff29, coeff30, 
@@ -111,6 +111,7 @@ begin
             ldcoeff_done <= '0'; 
             ld2mem <= '0';
             counter_nxt <= (others => '0');
+            address <= (others => '0');
             
             --address_reg <= (others => '0');
             address_nxt <= (others => '0');
@@ -151,6 +152,9 @@ begin
                 when "1101" => address <= "1101"; coeff12 <= coeff_in(13 downto 7); coeff16 <= coeff_in(6 downto 0); address_nxt <= "1110"; state_nxt <= s_keep;
                 when "1110" => address <= "1110"; coeff20 <= coeff_in(13 downto 7); coeff24 <= coeff_in(6 downto 0); address_nxt <= "1111"; state_nxt <= s_keep;
                 when "1111" => address <= "1111"; coeff28 <= coeff_in(13 downto 7); coeff32 <= coeff_in(6 downto 0); address_nxt <= "0000"; state_nxt <= s_send;
+                
+                when others => address <= "0000"; coeff01 <= coeff_in(13 downto 7); coeff05 <= coeff_in(6 downto 0); address_nxt <= "0001"; state_nxt <= s_keep;
+                
             end case;
         
         when s_send => 
@@ -186,7 +190,10 @@ begin
                 when "11100" => ctrl_coeff <= "011101"; coeff <= coeff29; ldcoeff_done <= '0'; send_ctr_nxt <= "11101"; state_nxt <= s_send;
                 when "11101" => ctrl_coeff <= "011110"; coeff <= coeff30; ldcoeff_done <= '0'; send_ctr_nxt <= "11110"; state_nxt <= s_send;
                 when "11110" => ctrl_coeff <= "011111"; coeff <= coeff31; ldcoeff_done <= '0'; send_ctr_nxt <= "11111"; state_nxt <= s_send;
-                when "11111" => ctrl_coeff <= "100000"; coeff <= coeff32; ldcoeff_done <= '1'; send_ctr_nxt <= "00000"; state_nxt <= s_initial;         
+                when "11111" => ctrl_coeff <= "100000"; coeff <= coeff32; ldcoeff_done <= '1'; send_ctr_nxt <= "00000"; state_nxt <= s_initial;   
+                
+                when others => ctrl_coeff <= "000001"; coeff <= coeff01; ldcoeff_done <= '0'; send_ctr_nxt <= "00001"; state_nxt <= s_send;
+                      
             end case;
 
     end case;
