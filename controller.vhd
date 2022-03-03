@@ -299,10 +299,10 @@ begin
             load_en <= '0'; 
             op_en <= '0';   
             store_en <= '0';
-            max_en <= '1';
             avg_en <= '0';
+            max_en <= '1';
             state_nxt <= s_avg; 
-            
+                        
         when s_avg => 
             load_en <= '0'; 
             op_en <= '0';   

@@ -26,7 +26,7 @@ entity operation is
         result4         : out std_logic_vector(18 downto 0);
 
         --to the compare---------------------------------------------
-        compare_done    : out std_logic;
+        --compare_done    : out std_logic;
         compare_out     : out std_logic_vector(18 downto 0)
         
   );
@@ -148,7 +148,8 @@ begin
             column_nxt <= "00";
             out_ready <= '0';
             op_done <= '0';
-            compare_done <= '0';
+            --compare_done <= '0';
+            compare_out <= (others => '0');
             if op_en = '1' then 
                 state_nxt <= s_store;
             else
@@ -297,7 +298,7 @@ begin
         when s_send_compare => 
             out_ready <= '0';
             op_done <= '1';
-            compare_done <= '1'; 
+            --compare_done <= '1'; 
             compare_out <= compare;
             state_nxt <= s_initial; 
     end case;
