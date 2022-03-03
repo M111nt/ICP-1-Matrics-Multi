@@ -19,7 +19,7 @@ entity controller is
         ctrl_input      : in std_logic_vector(3 downto 0);
         input           : in std_logic_vector(7 downto 0);
     --number from op---------------------------------------------------------    
-        data2op_done    : in std_logic; --finish storing data in op
+        --data2op_done    : in std_logic; --finish storing data in op
 
         out_ready       : in std_logic; --return 4 results to controller
         result1         : in std_logic_vector(17 downto 0);
@@ -45,7 +45,7 @@ entity controller is
     --number to op----------------------------------------------------------    
         --begin_coeff2op  : out std_logic;
         --flag_coeff2op   : out std_logic;
-        flag_data2op   : out std_logic;
+        --flag_data2op   : out std_logic;
         data2op         : out std_logic_vector(7 downto 0);
         --begin_input2op  : out std_logic;
         --input2op        : out std_logic_vector(7 downto 0)
@@ -400,7 +400,7 @@ begin
 
 end process;
 
-op_send: process(op_en, data2op_done, counter, 
+op_send: process(op_en, counter, --data2op_done,
                 coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
                 coeff11, coeff12, coeff13, coeff14,coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
                 coeff21, coeff22, coeff23, coeff24, coeff25, coeff26, coeff27, coeff28, coeff29, coeff30, 
@@ -409,8 +409,8 @@ op_send: process(op_en, data2op_done, counter,
 begin 
     if op_en ='1' then 
         start_count <= '1'; --contrl the op counter
-        if data2op_done = '0' then
-            flag_data2op <= '0';
+--        if data2op_done = '0' then
+--            flag_data2op <= '0';
             case counter is 
                 when "000001" => data2op <= "0" & coeff01; counter_nxt <= counter + "000001"; address2op <= "000001";
                 when "000010" => data2op <= "0" & coeff02; counter_nxt <= counter + "000001"; address2op <= "000010";
@@ -455,12 +455,12 @@ begin
                 when "101000" => data2op <= input08; counter_nxt <= "000001"; address2op <= "101000"; 
                 when others => data2op <= (others => '0'); counter_nxt <= "000001"; address2op <= "000001";        
             end case;
-        else 
-            data2op <= (others => '0'); 
-            counter_nxt <= "000001";
-            flag_data2op <= '1';
-            address2op <= "000001";
-        end if;
+--        else 
+--            data2op <= (others => '0'); 
+--            counter_nxt <= "000001";
+--            flag_data2op <= '1';
+--            address2op <= "000001";
+--        end if;
     else 
         --begin_coeff2op <= '0';
         --begin_input2op <= '0';

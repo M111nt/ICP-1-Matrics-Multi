@@ -90,7 +90,7 @@ begin
     end if;         
 end process;    
 
-process(state_reg, ldinput_en, counter, input_in, column, send_ctrl, 
+process(state_reg, ldinput_en, counter, column, send_ctrl, 
         input01, input02, input03, input04, input05, input06, input07, input08, input09, input10, 
         input11, input12, input13, input14, input15, input16, input17, input18, input19, input20, 
         input21, input22, input23, input24, input25, input26, input27, input28, input29, input30, 
