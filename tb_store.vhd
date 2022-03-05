@@ -58,7 +58,9 @@ reset <= '1' ,
          '0' after    4*period1; 
 store_en <= '0', 
             '1' after 6*period1,
-            '0' after 8*period1;
+            '0' after 8*period1, 
+            '1' after 28*period1, 
+            '0' after 30*period1;
 result1_2store <= "0000000000000000001";
 result2_2store <= "0000000000000000010";
 result3_2store <= "0000000000000000011";

@@ -19,7 +19,7 @@ entity operation is
         
         op_done         : out std_logic;
         
-        out_ready       : out std_logic;
+        --out_ready       : out std_logic;
         result1         : out std_logic_vector(18 downto 0);
         result2         : out std_logic_vector(18 downto 0);
         result3         : out std_logic_vector(18 downto 0);
@@ -146,7 +146,7 @@ begin
         
         when s_initial => 
             column_nxt <= "00";
-            out_ready <= '0';
+            --out_ready <= '0';
             op_done <= '0';
             --compare_done <= '0';
             compare_out <= (others => '0');
@@ -172,7 +172,7 @@ begin
         
         when s_mult1 => 
             state_nxt <= s_mult2;
-            out_ready <= '0';
+            --out_ready <= '0';
             case column is
                 when "00" => output_reg1 <= input01 * coeff01; output_reg2 <= input02 * coeff05;
                 when "01" => output_reg1 <= input01 * coeff02; output_reg2 <= input02 * coeff06;
@@ -249,7 +249,7 @@ begin
             case column is 
                 when "00" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '0';
+                    --out_ready <= '0';
                     column_nxt <= "01";
                     result1 <= output1; 
                     if compare < output1 then 
@@ -260,7 +260,7 @@ begin
                     
                 when "01" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '0'; 
+                    --out_ready <= '0'; 
                     column_nxt <= "10";  
                     result2 <= output2;
                     if compare < output2 then 
@@ -271,7 +271,7 @@ begin
                     
                 when "10" => 
                     state_nxt <= s_mult1;
-                    out_ready <= '0'; 
+                    --out_ready <= '0'; 
                     column_nxt <= "11"; 
                     result3 <= output3;
                     if compare < output3 then 
@@ -282,7 +282,7 @@ begin
                     
                 when "11" => 
                     state_nxt <= s_send_compare;                    
-                    out_ready <= '1';
+                    --out_ready <= '1';
                     column_nxt <= "00"; 
                     result4 <= output4;  
                     if compare < output4 then 
@@ -296,7 +296,7 @@ begin
             end case;
         
         when s_send_compare => 
-            out_ready <= '0';
+            --out_ready <= '0';
             op_done <= '1';
             --compare_done <= '1'; 
             compare_out <= compare;

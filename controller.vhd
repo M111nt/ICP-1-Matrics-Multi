@@ -21,11 +21,11 @@ entity controller is
     --number from op---------------------------------------------------------    
         --data2op_done    : in std_logic; --finish storing data in op
 
-        out_ready       : in std_logic; --return 4 results to controller
-        result1         : in std_logic_vector(17 downto 0);
-        result2         : in std_logic_vector(17 downto 0);
-        result3         : in std_logic_vector(17 downto 0);
-        result4         : in std_logic_vector(17 downto 0);    
+        --out_ready       : in std_logic; --return 4 results to controller
+        result1         : in std_logic_vector(18 downto 0);
+        result2         : in std_logic_vector(18 downto 0);
+        result3         : in std_logic_vector(18 downto 0);
+        result4         : in std_logic_vector(18 downto 0);    
         
 ------------------------------------------------------------------------        
         
@@ -34,7 +34,7 @@ entity controller is
         load_en         : out std_logic;
         op_en           : out std_logic;
         store_en        : out std_logic; 
-        ready           : out std_logic; 
+        --ready           : out std_logic; 
         max_en          : out std_logic;
         avg_en          : out std_logic;   
 
@@ -61,6 +61,10 @@ end controller;
 
 
 architecture Behavioral of controller is
+
+    signal ldcoeff_controller   : std_logic;
+    signal ldinput_controller   : std_logic;
+    signal op_controller        : std_logic;
 
 --state machine----------------------------------------------------
     --signal column : std_logic_vector(2 downto 0);
@@ -134,10 +138,10 @@ architecture Behavioral of controller is
     
     
     
-    signal mean1    : std_logic_vector(16 downto 0);
-    signal mean2    : std_logic_vector(16 downto 0);
-    signal mean3    : std_logic_vector(16 downto 0);
-    signal mean4    : std_logic_vector(16 downto 0);
+    signal mean1    : std_logic_vector(18 downto 0);
+    signal mean2    : std_logic_vector(18 downto 0);
+    signal mean3    : std_logic_vector(18 downto 0);
+    signal mean4    : std_logic_vector(18 downto 0);
     
 --mean--------------------------------------------------------------------
 
@@ -159,7 +163,7 @@ end process;
 
 --state machine-------------------------------------
 state_machine:process (state_reg, start, 
-        ldcoeff_done, ldinput_done, load_done, op_done, store_done, out_ready,
+        ldcoeff_done, ldinput_done, load_done, op_done, store_done, 
         column, column_nxt, 
         result1_reg, result2_reg, result3_reg, result4_reg, 
         mean1, mean2, mean3, mean4, mean_reg
@@ -168,6 +172,7 @@ begin
     case state_reg is 
         when s_coeff2mem => 
             ldcoeff_enable <= '1'; 
+            ldcoeff_controller <= '1';
             ldinput_enable <= '0'; 
             --column <= "00";
             column_nxt <= "00";
@@ -179,6 +184,7 @@ begin
             
         when s_input2reg =>
             ldcoeff_enable <= '0';
+            ldcoeff_controller <= '0';
             ldinput_enable <= '1'; 
             column <= column_nxt;   --control the result of mean         
             if ldinput_done = '1' then 
@@ -189,6 +195,7 @@ begin
         
         when s_idle => 
             load_en <= '0';
+            ldinput_controller <= '0';
             op_en <= '0';
             store_en <= '0';
             max_en <= '0';
@@ -201,7 +208,9 @@ begin
             
         when s_load => 
             load_en <= '1'; 
-            op_en <= '0';   
+            ldinput_controller <= '1';
+            op_en <= '0'; 
+            op_controller <= '0';  
             store_en <= '0';
             max_en <= '0';
             avg_en <= '0';
@@ -213,7 +222,9 @@ begin
         
         when s_op => 
             load_en <= '0'; 
-            op_en <= '1';   
+            ldinput_controller <= '0';
+            op_en <= '1'; 
+            op_controller <= '1';  
             store_en <= '0';
             max_en <= '0';
             avg_en <= '0';
@@ -225,15 +236,16 @@ begin
                                
         when s_store => 
             load_en <= '0'; 
-            op_en <= '0';   
+            op_en <= '0'; 
+            op_controller <= '0';   
             store_en <= '1';
             max_en <= '0';
             avg_en <= '0';
-            if out_ready = '1' then 
-                result1_reg <= result1;
-                result2_reg <= result2;
-                result3_reg <= result3;
-                result4_reg <= result4;
+            --if out_ready = '1' then 
+            result1_reg <= result1;
+            result2_reg <= result2;
+            result3_reg <= result3;
+            result4_reg <= result4;
 
                 case column is 
                     when "00" =>
@@ -285,13 +297,15 @@ begin
                         else 
                             state_nxt <= s_store;
                         end if; 
+                        
+                     when others => state_nxt <= s_store;   
                 end case;
-            else
-                result1_2store <= (others => '0');
-                result2_2store <= (others => '0');
-                result3_2store <= (others => '0');
-                result4_2store <= (others => '0');
-            end if;
+--            else
+--                result1_2store <= (others => '0');
+--                result2_2store <= (others => '0');
+--                result3_2store <= (others => '0');
+--                result4_2store <= (others => '0');
+--            end if;
             
 
         
@@ -318,9 +332,9 @@ end process;
 
 
 --load coeff-----------------------------------------------------
-ld_coeff: process(ldcoeff_enable, ctrl_coeff, coeff)
+ld_coeff: process(ldcoeff_controller, ctrl_coeff, coeff)
 begin 
-    if ldcoeff_enable = '1' then 
+    if ldcoeff_controller = '1' then 
         case ctrl_coeff is 
             when "000001" => coeff01 <= coeff; --flag_coeff <= '0'; --start, parity
             when "000010" => coeff02 <= coeff; --flag_coeff <= '0';
@@ -364,9 +378,9 @@ begin
 end process;
 
 --load input-----------------------------------------------------
-ld_input: process(load_en, ctrl_input, input)
+ld_input: process(ldinput_controller, ctrl_input, input)
 begin 
-    if load_en = '1' then 
+    if ldinput_controller = '1' then 
         case ctrl_input is
             when "0001" => input01 <= input; --flag_input <= '0';
             when "0010" => input02 <= input; --flag_input <= '0';
@@ -400,14 +414,14 @@ begin
 
 end process;
 
-op_send: process(op_en, counter, --data2op_done,
+op_send: process(op_controller, counter, --data2op_done,
                 coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
                 coeff11, coeff12, coeff13, coeff14,coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
                 coeff21, coeff22, coeff23, coeff24, coeff25, coeff26, coeff27, coeff28, coeff29, coeff30, 
                 coeff31, coeff32, 
                 input01, input02, input03, input04, input05, input06, input07, input08)
 begin 
-    if op_en ='1' then 
+    if op_controller ='1' then 
         start_count <= '1'; --contrl the op counter
 --        if data2op_done = '0' then
 --            flag_data2op <= '0';
