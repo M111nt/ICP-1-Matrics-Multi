@@ -51,10 +51,10 @@ entity controller is
         --input2op        : out std_logic_vector(7 downto 0)
         address2op      : out std_logic_vector(5 downto 0);
     ----------------------------------------------------------------
-        result1_2store  : out std_logic_vector(17 downto 0);
-        result2_2store  : out std_logic_vector(17 downto 0);
-        result3_2store  : out std_logic_vector(17 downto 0);
-        result4_2store  : out std_logic_vector(17 downto 0)  
+        result1_2store  : out std_logic_vector(18 downto 0);
+        result2_2store  : out std_logic_vector(18 downto 0);
+        result3_2store  : out std_logic_vector(18 downto 0);
+        result4_2store  : out std_logic_vector(18 downto 0)  
     );
 
 end controller;
@@ -126,10 +126,10 @@ architecture Behavioral of controller is
     signal column_nxt   : std_logic_vector(1 downto 0);
     
     --signal column_ctrl  : std_logic;
-    signal result1_reg  : std_logic_vector(16 downto 0);
-    signal result2_reg  : std_logic_vector(16 downto 0);
-    signal result3_reg  : std_logic_vector(16 downto 0);
-    signal result4_reg  : std_logic_vector(16 downto 0);
+    signal result1_reg  : std_logic_vector(18 downto 0);
+    signal result2_reg  : std_logic_vector(18 downto 0);
+    signal result3_reg  : std_logic_vector(18 downto 0);
+    signal result4_reg  : std_logic_vector(18 downto 0);
     
     
     

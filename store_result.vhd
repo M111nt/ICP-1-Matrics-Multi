@@ -9,15 +9,15 @@ entity store_result is
         clk, reset      : in std_logic;
         
         store_en        : in std_logic;
-        result1_2store  : in std_logic_vector(17 downto 0);
-        result2_2store  : in std_logic_vector(17 downto 0);
-        result3_2store  : in std_logic_vector(17 downto 0);
-        result4_2store  : in std_logic_vector(17 downto 0);
+        result1_2store  : in std_logic_vector(18 downto 0);
+        result2_2store  : in std_logic_vector(18 downto 0);
+        result3_2store  : in std_logic_vector(18 downto 0);
+        result4_2store  : in std_logic_vector(18 downto 0);
         
         
         store_done      : out std_logic;
-        address         : out std_logic_vector(7 downto 0);
-        result_out      : out std_logic_vector(17 downto 0)
+        address_out     : out std_logic_vector(7 downto 0);
+        result_out      : out std_logic_vector(18 downto 0)
 
   );
 end store_result;
@@ -27,12 +27,13 @@ architecture Behavioral of store_result is
     type state_type is (s_initial, s_recieve, s_send1, s_send2, s_send3, s_send4);
     signal state_reg, state_nxt : state_type;
     
-    signal address_nxt  : std_logic_vector (7 downto 0);
+    signal address      : std_logic_vector (7 downto 0);-- := (others => '0');
+    signal address_nxt  : std_logic_vector (7 downto 0) := (others => '0');
     
-    signal result1  : std_logic_vector (17 downto 0);
-    signal result2  : std_logic_vector (17 downto 0);
-    signal result3  : std_logic_vector (17 downto 0);
-    signal result4  : std_logic_vector (17 downto 0);
+    signal result1  : std_logic_vector (18 downto 0);
+    signal result2  : std_logic_vector (18 downto 0);
+    signal result3  : std_logic_vector (18 downto 0);
+    signal result4  : std_logic_vector (18 downto 0);
 
 
 begin
@@ -49,7 +50,7 @@ begin
 end process;
 
 
-process(state_reg, s_initial, s_recieve, s_send1, s_send2, s_send3, s_send4)
+process(state_reg, store_en, address)
 begin 
     case state_reg is 
         when s_initial => 
@@ -64,33 +65,37 @@ begin
         
         when s_recieve => 
             store_done <= '0';
-            result1 <= result1_2store; 
-            result2 <= result2_2store;
-            result3 <= result3_2store;
-            result4 <= result4_2store;
+            address_nxt <= address + 1;
+--            result1 <= result1_2store; 
+--            result2 <= result2_2store;
+--            result3 <= result3_2store;
+--            result4 <= result4_2store;
             state_nxt <= s_send1;
         
         when s_send1 => 
             store_done <= '0';
+            address_out <= address;
             address_nxt <= address + 1;
             result_out <= result1;
             state_nxt <= s_send2;
 
         when s_send2 => 
             store_done <= '0';
+            address_out <= address;
             address_nxt <= address + 1;
             result_out <= result2;
             state_nxt <= s_send3;
         
         when s_send3 => 
             store_done <= '0';
+            address_out <= address;
             address_nxt <= address + 1;
             result_out <= result3;
             state_nxt <= s_send4;
         
         when s_send4 => 
             store_done <= '1';
-            address_nxt <= address + 1;
+            address_out <= address;
             result_out <= result4;
             state_nxt <= s_initial;
         
@@ -99,5 +104,12 @@ begin
     end case;
 
 end process;
+
+result1 <= result1_2store; 
+result2 <= result2_2store;
+result3 <= result3_2store;
+result4 <= result4_2store;
+
+
 
 end Behavioral;
