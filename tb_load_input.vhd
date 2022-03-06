@@ -15,6 +15,9 @@ component load_input is
         --from controller-------------------------------------
         ldinput_en      : in std_logic;
         column          : in std_logic_vector(1 downto 0);
+        
+        load_en         : in std_logic;
+        
         --from read input-------------------------------------
         input_in        : in std_logic_vector(7 downto 0);
         
@@ -36,7 +39,7 @@ end component;
     
     signal input_in     : std_logic_vector(7 downto 0);  
     signal ld2reg       : std_logic;  
-    
+    signal load_en      : std_logic;
     
     signal ctrl_input   : std_logic_vector(3 downto 0);
     signal input        : std_logic_vector(7 downto 0);
@@ -50,7 +53,8 @@ dut: load_input
 port map(
     clk             => clk,        
     reset           => reset,      
-    ldinput_en      => ldinput_en,    
+    ldinput_en      => ldinput_en, 
+    load_en         => load_en,   
     column          => column,                 
     input_in        => input_in,      
     ld2reg          => ld2reg,        
@@ -66,11 +70,16 @@ clk <= not (clk) after 1*period1;
 reset <= '1' ,
          '0' after    4*period1;
 
-ldinput_en <=  '0' after  0*period1,
+ldinput_en <=  '0' ,
             '1' after  10*period1,
             '0' after  80*period1;
+
+load_en <= '0', 
+           '1' after 90*period1, 
+           '0' after 92*period1;
+
 column <=   "00" after 0*period1, 
-            "01" after 100*period1;
+            "01" after 120*period1;
 
 
 
