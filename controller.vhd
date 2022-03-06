@@ -42,6 +42,7 @@ entity controller is
         --flag_coeff      : out std_logic; 
     --ld input--------------------------------------------------------------
         --flag_input      : out std_logic;
+        column_out        : out std_logic_vector(1 downto 0);
     --number to op----------------------------------------------------------    
         --begin_coeff2op  : out std_logic;
         --flag_coeff2op   : out std_logic;
@@ -209,6 +210,7 @@ begin
         when s_load => 
             load_en <= '1'; 
             ldinput_controller <= '1';
+            column_out <= column;
             op_en <= '0'; 
             op_controller <= '0';  
             store_en <= '0';

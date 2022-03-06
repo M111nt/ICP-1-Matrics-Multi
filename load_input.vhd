@@ -14,21 +14,16 @@ entity load_input is
         --from controller-------------------------------------
         ldinput_en      : in std_logic;
         column          : in std_logic_vector(1 downto 0);
-        
         load_en         : in std_logic;
-        
         --from read input-------------------------------------
         input_in        : in std_logic_vector(7 downto 0);
-        
         --to read input---------------------------------------
         ld2reg          : out std_logic;        
         --to controller---------------------------------------
         ctrl_input      : out std_logic_vector(3 downto 0);
         input           : out std_logic_vector(7 downto 0);
-        
         ldinput_done    : out std_logic;
         load_done       : out std_logic
-
   );
 end load_input;
 

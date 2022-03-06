@@ -12,23 +12,36 @@ entity load_coeff is
     --signal from controller to load_coeff----------------------------------
     load_en         : in std_logic;
     --coeff from memory-----------------------------------------------------
-    coeff_in        : in std_logic_vector(31 downto 0);
-    
+    --coeff_in        : in std_logic_vector(31 downto 0);
+    coeff_read      : in std_logic_vector(13 downto 0);
     
     --enable txt file to memory---------------------------------------------
     ld2mem          : out std_logic;
     --to memory-------------------------------------------------------------
-    address         : out std_logic_vector(3 downto 0);
+    --address         : out std_logic_vector(7 downto 0);
     --to controller---------------------------------------------------------
     ctrl_coeff      : out std_logic_vector(5 downto 0);
     coeff           : out std_logic_vector(6 downto 0);
     ldcoeff_done    : out std_logic
-  
-  
+
   );
 end load_coeff;
 
 architecture Behavioral of load_coeff is
+
+component SRAM_SP_WRAPPER
+  port (
+    ClkxCI  : in  std_logic;
+    CSxSI   : in  std_logic;            -- Active Low
+    WExSI   : in  std_logic;            --Active Low
+    AddrxDI : in  std_logic_vector (7 downto 0);
+    RYxSO   : out std_logic;
+    DataxDI : in  std_logic_vector (31 downto 0);
+    DataxDO : out std_logic_vector (31 downto 0)
+    );
+end component;
+
+
 
     type state_type is (s_initial, s_load, s_keep, s_send);
     signal state_reg, state_nxt : state_type;
@@ -75,8 +88,29 @@ architecture Behavioral of load_coeff is
     signal coeff31      : std_logic_vector(6 downto 0);
     signal coeff32      : std_logic_vector(6 downto 0);
 
+    signal coeff_in     : std_logic_vector(31 downto 0);
+    --signal data_in      : std_logic_vector(31 downto 0);
+    signal choose       : std_logic;
+    signal address      : std_logic_vector(7 downto 0);
+    signal RY_ram       : std_logic;
 
 begin
+Ram_coeff: SRAM_SP_WRAPPER
+port map(
+    ClkxCI             => clk           ,
+    CSxSI              => choose        , -- Active Low --only write in this module
+    WExSI              => '0'           , -- Active Low
+    AddrxDI            => address       ,
+    RYxSO              => RY_ram        ,
+    DataxDI            => "000000000000000000" & coeff_read,
+    DataxDO            => coeff_in 
+    );
+
+
+
+
+
+
 
 --state contrl--------------------------------
 process(clk, reset)
@@ -126,6 +160,8 @@ begin
         when s_load => --load coefficients from txt to memory
             ldcoeff_done <= '0';
             counter_nxt <= counter + 1;
+            choose <= '0';--write
+            address <= "000" & counter;            
             if counter > 15 then
                 state_nxt <= s_keep;
                 ld2mem <= '0';
@@ -135,25 +171,26 @@ begin
             end if;
             
         when s_keep =>  
+        choose <= '1';--read
             case address_reg is 
-                when "0000" => address <= "0000"; coeff01 <= coeff_in(13 downto 7); coeff05 <= coeff_in(6 downto 0); address_nxt <= "0001"; state_nxt <= s_keep;
-                when "0001" => address <= "0001"; coeff09 <= coeff_in(13 downto 7); coeff13 <= coeff_in(6 downto 0); address_nxt <= "0010"; state_nxt <= s_keep;
-                when "0010" => address <= "0010"; coeff17 <= coeff_in(13 downto 7); coeff21 <= coeff_in(6 downto 0); address_nxt <= "0011"; state_nxt <= s_keep;
-                when "0011" => address <= "0011"; coeff25 <= coeff_in(13 downto 7); coeff29 <= coeff_in(6 downto 0); address_nxt <= "0100"; state_nxt <= s_keep;
-                when "0100" => address <= "0100"; coeff02 <= coeff_in(13 downto 7); coeff06 <= coeff_in(6 downto 0); address_nxt <= "0101"; state_nxt <= s_keep;
-                when "0101" => address <= "0101"; coeff10 <= coeff_in(13 downto 7); coeff14 <= coeff_in(6 downto 0); address_nxt <= "0110"; state_nxt <= s_keep;
-                when "0110" => address <= "0110"; coeff18 <= coeff_in(13 downto 7); coeff22 <= coeff_in(6 downto 0); address_nxt <= "0111"; state_nxt <= s_keep;
-                when "0111" => address <= "0111"; coeff26 <= coeff_in(13 downto 7); coeff30 <= coeff_in(6 downto 0); address_nxt <= "1000"; state_nxt <= s_keep;
-                when "1000" => address <= "1000"; coeff03 <= coeff_in(13 downto 7); coeff07 <= coeff_in(6 downto 0); address_nxt <= "1001"; state_nxt <= s_keep;
-                when "1001" => address <= "1001"; coeff11 <= coeff_in(13 downto 7); coeff15 <= coeff_in(6 downto 0); address_nxt <= "1010"; state_nxt <= s_keep;
-                when "1010" => address <= "1010"; coeff19 <= coeff_in(13 downto 7); coeff23 <= coeff_in(6 downto 0); address_nxt <= "1011"; state_nxt <= s_keep;
-                when "1011" => address <= "1011"; coeff27 <= coeff_in(13 downto 7); coeff31 <= coeff_in(6 downto 0); address_nxt <= "1100"; state_nxt <= s_keep;
-                when "1100" => address <= "1100"; coeff04 <= coeff_in(13 downto 7); coeff08 <= coeff_in(6 downto 0); address_nxt <= "1101"; state_nxt <= s_keep;
-                when "1101" => address <= "1101"; coeff12 <= coeff_in(13 downto 7); coeff16 <= coeff_in(6 downto 0); address_nxt <= "1110"; state_nxt <= s_keep;
-                when "1110" => address <= "1110"; coeff20 <= coeff_in(13 downto 7); coeff24 <= coeff_in(6 downto 0); address_nxt <= "1111"; state_nxt <= s_keep;
-                when "1111" => address <= "1111"; coeff28 <= coeff_in(13 downto 7); coeff32 <= coeff_in(6 downto 0); address_nxt <= "0000"; state_nxt <= s_send;
+                when "0000" => address <= "0000000"; coeff01 <= coeff_in(13 downto 7); coeff05 <= coeff_in(6 downto 0); address_nxt <= "0001"; state_nxt <= s_keep;
+                when "0001" => address <= "0000001"; coeff09 <= coeff_in(13 downto 7); coeff13 <= coeff_in(6 downto 0); address_nxt <= "0010"; state_nxt <= s_keep;
+                when "0010" => address <= "0000010"; coeff17 <= coeff_in(13 downto 7); coeff21 <= coeff_in(6 downto 0); address_nxt <= "0011"; state_nxt <= s_keep;
+                when "0011" => address <= "0000011"; coeff25 <= coeff_in(13 downto 7); coeff29 <= coeff_in(6 downto 0); address_nxt <= "0100"; state_nxt <= s_keep;
+                when "0100" => address <= "0000100"; coeff02 <= coeff_in(13 downto 7); coeff06 <= coeff_in(6 downto 0); address_nxt <= "0101"; state_nxt <= s_keep;
+                when "0101" => address <= "0000101"; coeff10 <= coeff_in(13 downto 7); coeff14 <= coeff_in(6 downto 0); address_nxt <= "0110"; state_nxt <= s_keep;
+                when "0110" => address <= "0000110"; coeff18 <= coeff_in(13 downto 7); coeff22 <= coeff_in(6 downto 0); address_nxt <= "0111"; state_nxt <= s_keep;
+                when "0111" => address <= "0000111"; coeff26 <= coeff_in(13 downto 7); coeff30 <= coeff_in(6 downto 0); address_nxt <= "1000"; state_nxt <= s_keep;
+                when "1000" => address <= "0001000"; coeff03 <= coeff_in(13 downto 7); coeff07 <= coeff_in(6 downto 0); address_nxt <= "1001"; state_nxt <= s_keep;
+                when "1001" => address <= "0001001"; coeff11 <= coeff_in(13 downto 7); coeff15 <= coeff_in(6 downto 0); address_nxt <= "1010"; state_nxt <= s_keep;
+                when "1010" => address <= "0001010"; coeff19 <= coeff_in(13 downto 7); coeff23 <= coeff_in(6 downto 0); address_nxt <= "1011"; state_nxt <= s_keep;
+                when "1011" => address <= "0001011"; coeff27 <= coeff_in(13 downto 7); coeff31 <= coeff_in(6 downto 0); address_nxt <= "1100"; state_nxt <= s_keep;
+                when "1100" => address <= "0001100"; coeff04 <= coeff_in(13 downto 7); coeff08 <= coeff_in(6 downto 0); address_nxt <= "1101"; state_nxt <= s_keep;
+                when "1101" => address <= "0001101"; coeff12 <= coeff_in(13 downto 7); coeff16 <= coeff_in(6 downto 0); address_nxt <= "1110"; state_nxt <= s_keep;
+                when "1110" => address <= "0001110"; coeff20 <= coeff_in(13 downto 7); coeff24 <= coeff_in(6 downto 0); address_nxt <= "1111"; state_nxt <= s_keep;
+                when "1111" => address <= "0001111"; coeff28 <= coeff_in(13 downto 7); coeff32 <= coeff_in(6 downto 0); address_nxt <= "0000"; state_nxt <= s_send;
                 
-                when others => address <= "0000"; coeff01 <= coeff_in(13 downto 7); coeff05 <= coeff_in(6 downto 0); address_nxt <= "0001"; state_nxt <= s_keep;
+                when others => address <= "0000000"; coeff01 <= coeff_in(13 downto 7); coeff05 <= coeff_in(6 downto 0); address_nxt <= "0001"; state_nxt <= s_keep;
                 
             end case;
         
