@@ -257,7 +257,7 @@ begin
                         result3_2store <= result3_reg;
                         result4_2store <= result4_reg;
                         if store_done = '1' then
-                            state_nxt <= s_input2reg;
+                            state_nxt <= s_load;
                             column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 
@@ -270,7 +270,7 @@ begin
                         result3_2store <= result3_reg;
                         result4_2store <= result4_reg;
                         if store_done = '1' then
-                            state_nxt <= s_input2reg;
+                            state_nxt <= s_load;
                             column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 
@@ -282,7 +282,7 @@ begin
                         result3_2store <= result3_reg;
                         result4_2store <= result4_reg;
                         if store_done = '1' then
-                            state_nxt <= s_input2reg;
+                            state_nxt <= s_load;
                             column_nxt <= column + 1;
                         else 
                             state_nxt <= s_store; 

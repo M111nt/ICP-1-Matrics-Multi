@@ -35,8 +35,8 @@ architecture Behavioral of load_input is
     signal counter      : std_logic_vector(4 downto 0);
     signal counter_nxt  : std_logic_vector(4 downto 0);
     
-    signal send_ctrl    : std_logic_vector(4 downto 0) := (others => '0');
-    signal send_ctrl_nxt: std_logic_vector(4 downto 0) := (others => '0');
+    signal send_ctrl    : unsigned(4 downto 0) := (others => '0');
+    signal send_ctrl_nxt: unsigned(4 downto 0) := (others => '0');
     --signal row          : std_logic_vector(1 downto 0);
     --signal row_nxt      : std_logic_vector(1 downto 0);
     

@@ -93,6 +93,7 @@ end component;
     signal choose       : std_logic;
     signal address      : std_logic_vector(7 downto 0);
     signal RY_ram       : std_logic;
+    signal dataxdi      : std_logic_vector(31 downto 0);
 
 begin
 Ram_coeff: SRAM_SP_WRAPPER
@@ -102,11 +103,11 @@ port map(
     WExSI              => '0'           , -- Active Low
     AddrxDI            => address       ,
     RYxSO              => RY_ram        ,
-    DataxDI            => "000000000000000000" & coeff_read,
+    DataxDI            => dataxdi       ,
     DataxDO            => coeff_in 
     );
 
-
+dataxdi <= "000000000000000000" & coeff_read;
 
 
 
