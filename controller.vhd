@@ -1,7 +1,9 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use ieee.std_logic_signed.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+
 
 entity controller is
     Port ( 
@@ -55,7 +57,8 @@ entity controller is
         result1_2store  : out std_logic_vector(18 downto 0);
         result2_2store  : out std_logic_vector(18 downto 0);
         result3_2store  : out std_logic_vector(18 downto 0);
-        result4_2store  : out std_logic_vector(18 downto 0)  
+        result4_2store  : out std_logic_vector(18 downto 0)
+        --mean_out        : out std_logic_vector(20 downto 0)  
     );
 
 end controller;
@@ -172,22 +175,25 @@ state_machine:process (state_reg, start,
 begin
     case state_reg is 
         when s_coeff2mem => 
-            ldcoeff_enable <= '1'; 
-            ldcoeff_controller <= '1';
+--            ldcoeff_enable <= '1'; 
+--            ldcoeff_controller <= '1';
             ldinput_enable <= '0'; 
             --column <= "00";
             column_nxt <= "00";
             if ldcoeff_done = '1' then 
                 state_nxt <= s_input2reg;
             else 
-                state_nxt <= state_reg;
+                ldcoeff_enable <= '1'; 
+                ldcoeff_controller <= '1';
+                state_nxt <= s_coeff2mem;
             end if;
             
         when s_input2reg =>
             ldcoeff_enable <= '0';
             ldcoeff_controller <= '0';
             ldinput_enable <= '1'; 
-            column <= column_nxt;   --control the result of mean         
+            column <= column_nxt;
+            --control the result of mean         
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
             else
@@ -210,7 +216,8 @@ begin
         when s_load => 
             load_en <= '1'; 
             ldinput_controller <= '1';
-            column_out <= column;
+            column <= column_nxt;
+            column_out <= column_nxt;
             op_en <= '0'; 
             op_controller <= '0';  
             store_en <= '0';
@@ -325,7 +332,7 @@ begin
             store_en <= '0';
             max_en <= '0';
             avg_en <= '1';
-            mean_reg <= mean1 + mean2 + mean3 + mean4; 
+            mean_reg <= mean1 + mean2 + mean3 + mean4 + std_logic_vector(to_unsigned(0,21)); 
             mean_out <= "00" & mean_reg(20 downto 2);
             state_nxt <= s_input2reg;
     end case;

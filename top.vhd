@@ -4,8 +4,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity Top is
     port(
-         clk        : in std_logic;
-         reset      : in std_logic;
+         clki        : in std_logic;
+         reseti      : in std_logic;
          start      : in std_logic;
          datainput  : in std_logic_vector(13 downto 0);
          dataOutput : out std_logic_vector(18 downto 0);
@@ -20,17 +20,17 @@ architecture Behavioral of top is
 
 
 
-  component CPAD_S_74x50u_IN            --input PAD
-    port (
-      COREIO : out std_logic;
-      PADIO  : in  std_logic);
-  end component;
+--  component CPAD_S_74x50u_IN            --input PAD
+--    port (
+--      COREIO : out std_logic;
+--      PADIO  : in  std_logic);
+--  end component;
 
-  component CPAD_S_74x50u_OUT           --output PAD
-    port (
-      COREIO : in  std_logic;
-      PADIO  : out std_logic);
-  end component;
+--  component CPAD_S_74x50u_OUT           --output PAD
+--    port (
+--      COREIO : in  std_logic;
+--      PADIO  : out std_logic);
+--  end component;
 
     component SRAM_SP_WRAPPER
       port (
@@ -90,14 +90,9 @@ end component;
 component load_coeff is
   Port (
      clk, reset     : in std_logic;
-    --signal from controller to load_coeff----------------------------------
-    load_en         : in std_logic;
-    --coeff from memory-----------------------------------------------------
-    --coeff_in        : in std_logic_vector(31 downto 0);
+    ldcoeff_enable  : in std_logic;
     coeff_read      : in std_logic_vector(13 downto 0);
-    --enable txt file to memory---------------------------------------------
     ld2mem          : out std_logic;
-    --to memory-------------------------------------------------------------
     --address         : out std_logic_vector(3 downto 0);
     --to controller---------------------------------------------------------
     ctrl_coeff      : out std_logic_vector(5 downto 0);
@@ -164,11 +159,11 @@ end component;
 
 
 --signal---------------------------------------------------------------------------------------------------------------------
-signal clki, reseti    : std_logic;  
+--signal clki, reseti    : std_logic;  
 --signal load_en          : std_logic;
 --signal coeff_in         : std_logic_vector(31 downto 0);
 --signal ld2mem_o         : std_logic;
---signal address          : std_logic_vector(3 downto 0);
+--signal address          : std_logic_vector(7 downto 0);
 --signal ctrl_coeff       : std_logic_vector(5 downto 0);
 --signal coeff            : std_logic_vector(6 downto 0);
 --signal ldcoeff_done     : std_logic;
@@ -266,7 +261,7 @@ coeff_part: load_coeff
 port map(
         clk             => clki             ,
         reset           => reseti           ,
-        load_en         => load_en          ,
+        ldcoeff_enable  => ldcoeff_enable   ,
         coeff_read      => datainput        ,
         ld2mem          => ld2mem           ,
         ctrl_coeff      => ctrl_coeff       ,
