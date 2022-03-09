@@ -113,6 +113,9 @@ architecture Behavioral of operation is
     signal compare      : std_logic_vector(18 downto 0) := (others => '0');
     signal compare_nxt  : std_logic_vector(18 downto 0) := (others => '0');
 
+    signal mult1, mult2, mult3, mult4 : std_logic_vector(7 downto 0);
+    signal result_1, result_2         : std_logic_vector(15 downto 0);
+
 begin
 
 --state ctrl-----------------------------------
@@ -138,10 +141,14 @@ process (state_reg, column, data2op_done,--flag_data2op, --
 --        coeff31, coeff32, 
         output_reg1, output_reg2, output_reg3, output_reg4, output_reg5, output_reg6, output_reg7, output_reg8,
         output1, output2, output3, output4, 
-        compare
+        compare,result_1,result_2
         )
 
 begin 
+
+result_1 <= mult1 * mult2; 
+result_2 <= mult3 * mult4;
+
     case state_reg is 
         
         when s_initial => 
@@ -174,53 +181,42 @@ begin
             state_nxt <= s_mult2;
             --out_ready <= '0';
             case column is
-                when "00" => output_reg1 <= input01 * coeff01; output_reg2 <= input02 * coeff05;
-                when "01" => output_reg1 <= input01 * coeff02; output_reg2 <= input02 * coeff06;
-                when "10" => output_reg1 <= input01 * coeff03; output_reg2 <= input02 * coeff07;
-                when "11" => output_reg1 <= input01 * coeff04; output_reg2 <= input02 * coeff08;
-                when others => output_reg1 <= input01 * coeff01; output_reg2 <= input02 * coeff05;
+                when "00" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff01; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff05;
+                when "01" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff02; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff06;
+                when "10" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff03; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff07;
+                when "11" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff04; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff08;
+                when others => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff01; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff05;
             end case;
             
         when s_mult2 => 
             state_nxt <= s_mult3;
             case column is
-                when "00" => output_reg3 <= input03 * coeff09; output_reg4 <= input04 * coeff13;
-                when "01" => output_reg3 <= input03 * coeff10; output_reg4 <= input04 * coeff14;
-                when "10" => output_reg3 <= input03 * coeff11; output_reg4 <= input04 * coeff15;
-                when "11" => output_reg3 <= input03 * coeff12; output_reg4 <= input04 * coeff16;
-                when others => output_reg3 <= input03 * coeff09; output_reg4 <= input04 * coeff13;
+                when "00" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff09; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff13;
+                when "01" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff10; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff14;
+                when "10" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff11; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff15;
+                when "11" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff12; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff16;
+                when others => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff09; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff13;
             end case;
         
         when s_mult3 => 
             state_nxt <= s_mult4;
             case column is 
-                when "00" => output_reg5 <= input05 * coeff17; output_reg6 <= input06 * coeff21; 
-                when "01" => output_reg5 <= input05 * coeff18; output_reg6 <= input06 * coeff22; 
-                when "10" => output_reg5 <= input05 * coeff19; output_reg6 <= input06 * coeff23; 
-                when "11" => output_reg5 <= input05 * coeff20; output_reg6 <= input06 * coeff24; 
-                when others => output_reg5 <= input05 * coeff17; output_reg6 <= input06 * coeff21;
+                when "00" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff17; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff21; 
+                when "01" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff18; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff22; 
+                when "10" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff19; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff23; 
+                when "11" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff20; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff24; 
+                when others => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff17; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff21;
             end case;
             
         when s_mult4 => 
             state_nxt <= s_add;
             case column is 
-                when "00" => output_reg7 <= input07 * coeff25; output_reg8 <= input08 * coeff29; 
-                when "01" => output_reg7 <= input07 * coeff26; output_reg8 <= input08 * coeff30; 
-                when "10" => output_reg7 <= input07 * coeff27; output_reg8 <= input08 * coeff31; 
-                when "11" => output_reg7 <= input07 * coeff28; output_reg8 <= input08 * coeff32; 
-                when others => output_reg7 <= input07 * coeff25; output_reg8 <= input08 * coeff29;
+                when "00" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff25; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff29; 
+                when "01" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff26; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff30; 
+                when "10" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff27; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff31; 
+                when "11" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff28; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff32; 
+                when others => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff25; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff29; 
              end case;  
-
---        when s_trans => 
---            output_tran1 <= "000" & output_reg1;
---            output_tran2 <= "000" & output_reg2;
---            output_tran3 <= "000" & output_reg3;
---            output_tran4 <= "000" & output_reg4;
---            output_tran5 <= "000" & output_reg5;
---            output_tran6 <= "000" & output_reg6;
---            output_tran7 <= "000" & output_reg7;
---            output_tran8 <= "000" & output_reg8;
---            state_nxt <= s_add;
 
         when s_add => 
             case column is 

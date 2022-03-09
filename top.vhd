@@ -32,17 +32,17 @@ architecture Behavioral of top is
 --      PADIO  : out std_logic);
 --  end component;
 
-    component SRAM_SP_WRAPPER
-      port (
-        ClkxCI  : in  std_logic;
-        CSxSI   : in  std_logic;            -- Active Low
-        WExSI   : in  std_logic;            --Active Low
-        AddrxDI : in  std_logic_vector (7 downto 0);
-        RYxSO   : out std_logic;
-        DataxDI : in  std_logic_vector (31 downto 0);
-        DataxDO : out std_logic_vector (31 downto 0)
-        );
-    end component;
+--    component SRAM_SP_WRAPPER
+--      port (
+--        ClkxCI  : in  std_logic;
+--        CSxSI   : in  std_logic;            -- Active Low
+--        WExSI   : in  std_logic;            --Active Low
+--        AddrxDI : in  std_logic_vector (7 downto 0);
+--        RYxSO   : out std_logic;
+--        DataxDI : in  std_logic_vector (31 downto 0);
+--        DataxDO : out std_logic_vector (31 downto 0)
+--        );
+--    end component;
 --------------------------------------------------------------------------------------------------------------------
 component controller is
     Port ( 
@@ -211,16 +211,16 @@ signal data_rom        : std_logic_vector (31 downto 0);
 --signal coeff_read      : std_logic_vector(13 downto 0);
 
 begin
-Rom:SRAM_SP_WRAPPER
-port map(
-    ClkxCI              => clki          ,
-    CSxSI               => CSN_rom       , -- Active Low
-    WExSI               => We            , -- Active Low
-    AddrxDI             => addrxdi       ,
-    RYxSO               => RY_rom        ,
-    DataxDI             => data_in       ,
-    DataxDO             => data_rom
-    );
+--Rom:SRAM_SP_WRAPPER
+--port map(
+--    ClkxCI              => clki          ,
+--    CSxSI               => CSN_rom       , -- Active Low
+--    WExSI               => We            , -- Active Low
+--    AddrxDI             => addrxdi       ,
+--    RYxSO               => RY_rom        ,
+--    DataxDI             => data_in       ,
+--    DataxDO             => data_rom
+--    );
 
 controller_part: controller 
 port map(
