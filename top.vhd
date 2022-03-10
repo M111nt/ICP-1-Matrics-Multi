@@ -124,10 +124,10 @@ component operation is
         data2op         : in std_logic_vector(7 downto 0);
         address2op      : in std_logic_vector(5 downto 0);
         op_done         : out std_logic;
-        result1         : out std_logic_vector(18 downto 0);
-        result2         : out std_logic_vector(18 downto 0);
-        result3         : out std_logic_vector(18 downto 0);
-        result4         : out std_logic_vector(18 downto 0);
+        result1_out     : out std_logic_vector(18 downto 0);
+        result2_out     : out std_logic_vector(18 downto 0);
+        result3_out     : out std_logic_vector(18 downto 0);
+        result4_out     : out std_logic_vector(18 downto 0);
         compare_out     : out std_logic_vector(18 downto 0)
         
   );
@@ -295,10 +295,10 @@ port map(
         data2op         => data2op          ,
         address2op      => address2op       ,
         op_done         => op_done          ,
-        result1         => result1          ,
-        result2         => result2          ,
-        result3         => result3          ,
-        result4         => result4          ,
+        result1_out     => result1          ,
+        result2_out     => result2          ,
+        result3_out     => result3          ,
+        result4_out     => result4          ,
         compare_out     => compare_out      
 );
 

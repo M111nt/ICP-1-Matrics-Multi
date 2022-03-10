@@ -2,7 +2,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use ieee.std_logic_unsigned.all;
-use ieee.std_logic_signed.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
@@ -29,11 +28,20 @@ end load_input;
 
 architecture Behavioral of load_input is
 
+component ff is
+  generic(N:integer:=1);
+  port(   D  :  in std_logic_vector(N-1 downto 0);
+          Q  : out std_logic_vector(N-1 downto 0);
+        clk  :  in std_logic;
+        reset:  in std_logic
+      );
+end component;
+
     type state_type is (s_initial, s_keep, s_send);
     signal state_reg, state_nxt : state_type;
     
-    signal counter      : std_logic_vector(4 downto 0);
-    signal counter_nxt  : std_logic_vector(4 downto 0);
+    signal counter      : std_logic_vector(5 downto 0);
+    signal counter_nxt  : std_logic_vector(5 downto 0);
     
     signal send_ctrl    : unsigned(4 downto 0) := (others => '0');
     signal send_ctrl_nxt: unsigned(4 downto 0) := (others => '0');
@@ -72,7 +80,7 @@ architecture Behavioral of load_input is
     signal input30      : std_logic_vector(7 downto 0);
     signal input31      : std_logic_vector(7 downto 0);
     signal input32      : std_logic_vector(7 downto 0);   
-    signal input_test   : std_logic_vector(7 downto 0); 
+    --signal input_test   : std_logic_vector(7 downto 0); 
     
     signal input01_nxt  : std_logic_vector(7 downto 0);
     signal input02_nxt  : std_logic_vector(7 downto 0);
@@ -114,69 +122,32 @@ process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_initial; 
-        counter <= (others => '0');
+        --counter <= (others => '0');
         send_ctrl <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-        counter <= counter_nxt;
+        --counter <= counter_nxt;
         send_ctrl <= send_ctrl_nxt;
     end if;         
 end process;    
 
-process(state_reg, ldinput_en, counter, column, send_ctrl, load_en
---        input01, input02, input03, input04, input05, input06, input07, input08, input09, input10, 
---        input11, input12, input13, input14, input15, input16, input17, input18, input19, input20, 
---        input21, input22, input23, input24, input25, input26, input27, input28, input29, input30, 
---        input31, input32
-       
-        ) 
+process(state_reg, ldinput_en, counter, column, send_ctrl, load_en) 
 begin 
-            ldinput_done <= '0';
+            --ldinput_done <= '0';
             load_done <= '0';
             ctrl_input <= (others => '0');
             input <= (others => '0');
-            counter_nxt <= counter;
+            --counter_nxt <= counter;
             send_ctrl_nxt <= send_ctrl;
 
-            input01_nxt <= input01;
-            input02_nxt <= input02;
-            input03_nxt <= input03;
-            input04_nxt <= input04;
-            input05_nxt <= input05;
-            input06_nxt <= input06;
-            input07_nxt <= input07;
-            input08_nxt <= input08;
-            input09_nxt <= input09;
-            input10_nxt <= input10;
-            input11_nxt <= input11;
-            input12_nxt <= input12;
-            input13_nxt <= input13;
-            input14_nxt <= input14;
-            input15_nxt <= input15;
-            input16_nxt <= input16;
-            input17_nxt <= input17;
-            input18_nxt <= input18;
-            input19_nxt <= input19;
-            input20_nxt <= input20;
-            input21_nxt <= input21;
-            input22_nxt <= input22;
-            input23_nxt <= input23;
-            input24_nxt <= input24;
-            input25_nxt <= input25;
-            input26_nxt <= input26;
-            input27_nxt <= input27;
-            input28_nxt <= input28;
-            input29_nxt <= input29;
-            input30_nxt <= input30;
-            input31_nxt <= input31;
-            input32_nxt <= input32;
+
 
     case state_reg is 
         when s_initial => 
             ld2reg <= '0';
             ctrl_input <= (others => '0');  
             input <= (others => '0');     
-            ldinput_done <= '0';
+            --ldinput_done <= '0';
             load_done <= '0';
             counter_nxt <= (others => '0');
             send_ctrl_nxt <= (others => '0');
@@ -188,41 +159,42 @@ begin
             
         when s_keep => 
             ld2reg <= '1';
-            case counter is 
-                when "00000" => input01_nxt <= input_in; counter_nxt <= "00001"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00001" => input02_nxt <= input_in; counter_nxt <= "00010"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00010" => input03_nxt <= input_in; counter_nxt <= "00011"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00011" => input04_nxt <= input_in; counter_nxt <= "00100"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00100" => input05_nxt <= input_in; counter_nxt <= "00101"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00101" => input06_nxt <= input_in; counter_nxt <= "00110"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00110" => input07_nxt <= input_in; counter_nxt <= "00111"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "00111" => input08_nxt <= input_in; counter_nxt <= "01000"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01000" => input09_nxt <= input_in; counter_nxt <= "01001"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01001" => input10_nxt <= input_in; counter_nxt <= "01010"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01010" => input11_nxt <= input_in; counter_nxt <= "01011"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01011" => input12_nxt <= input_in; counter_nxt <= "01100"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01100" => input13_nxt <= input_in; counter_nxt <= "01101"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01101" => input14_nxt <= input_in; counter_nxt <= "01110"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01110" => input15_nxt <= input_in; counter_nxt <= "01111"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "01111" => input16_nxt <= input_in; counter_nxt <= "10000"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10000" => input17_nxt <= input_in; counter_nxt <= "10001"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10001" => input18_nxt <= input_in; counter_nxt <= "10010"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10010" => input19_nxt <= input_in; counter_nxt <= "10011"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10011" => input20_nxt <= input_in; counter_nxt <= "10100"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10100" => input21_nxt <= input_in; counter_nxt <= "10101"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10101" => input22_nxt <= input_in; counter_nxt <= "10110"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10110" => input23_nxt <= input_in; counter_nxt <= "10111"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "10111" => input24_nxt <= input_in; counter_nxt <= "11000"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11000" => input25_nxt <= input_in; counter_nxt <= "11001"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11001" => input26_nxt <= input_in; counter_nxt <= "11010"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11010" => input27_nxt <= input_in; counter_nxt <= "11011"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11011" => input28_nxt <= input_in; counter_nxt <= "11100"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11100" => input29_nxt <= input_in; counter_nxt <= "11101"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11101" => input30_nxt <= input_in; counter_nxt <= "11110"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11110" => input31_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '0';--state_nxt <= s_keep; 
-                when "11111" => input32_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '1';--state_nxt <= s_keep; 
-                when others => input_test <= input_in; ldinput_done <= '0';--state_nxt <= s_keep;
-            end case;
+            counter_nxt <= counter + 1;
+--            case counter is 
+--                when "00000" => input01_nxt <= input_in; counter_nxt <= "00001"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00001" => input02_nxt <= input_in; counter_nxt <= "00010"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00010" => input03_nxt <= input_in; counter_nxt <= "00011"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00011" => input04_nxt <= input_in; counter_nxt <= "00100"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00100" => input05_nxt <= input_in; counter_nxt <= "00101"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00101" => input06_nxt <= input_in; counter_nxt <= "00110"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00110" => input07_nxt <= input_in; counter_nxt <= "00111"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "00111" => input08_nxt <= input_in; counter_nxt <= "01000"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01000" => input09_nxt <= input_in; counter_nxt <= "01001"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01001" => input10_nxt <= input_in; counter_nxt <= "01010"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01010" => input11_nxt <= input_in; counter_nxt <= "01011"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01011" => input12_nxt <= input_in; counter_nxt <= "01100"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01100" => input13_nxt <= input_in; counter_nxt <= "01101"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01101" => input14_nxt <= input_in; counter_nxt <= "01110"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01110" => input15_nxt <= input_in; counter_nxt <= "01111"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "01111" => input16_nxt <= input_in; counter_nxt <= "10000"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10000" => input17_nxt <= input_in; counter_nxt <= "10001"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10001" => input18_nxt <= input_in; counter_nxt <= "10010"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10010" => input19_nxt <= input_in; counter_nxt <= "10011"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10011" => input20_nxt <= input_in; counter_nxt <= "10100"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10100" => input21_nxt <= input_in; counter_nxt <= "10101"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10101" => input22_nxt <= input_in; counter_nxt <= "10110"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10110" => input23_nxt <= input_in; counter_nxt <= "10111"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "10111" => input24_nxt <= input_in; counter_nxt <= "11000"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11000" => input25_nxt <= input_in; counter_nxt <= "11001"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11001" => input26_nxt <= input_in; counter_nxt <= "11010"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11010" => input27_nxt <= input_in; counter_nxt <= "11011"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11011" => input28_nxt <= input_in; counter_nxt <= "11100"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11100" => input29_nxt <= input_in; counter_nxt <= "11101"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11101" => input30_nxt <= input_in; counter_nxt <= "11110"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11110" => input31_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '0';--state_nxt <= s_keep; 
+--                when "11111" => input32_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '1';--state_nxt <= s_keep; 
+--                when others => input_test <= input_in; ldinput_done <= '0';--state_nxt <= s_keep;
+--            end case;
             if load_en = '1' then 
                 state_nxt <= s_send; 
             else 
@@ -299,78 +271,274 @@ begin
 
 end process;
 
-process(clk, reset)
-begin 
-    if reset = '1' then 
-     input01 <= (others => '0');
-     input02 <= (others => '0');
-     input03 <= (others => '0');
-     input04 <= (others => '0');
-     input05 <= (others => '0');
-     input06 <= (others => '0');
-     input07 <= (others => '0');
-     input08 <= (others => '0');
-     input09 <= (others => '0');
-     input10 <= (others => '0');
-     input11 <= (others => '0');
-     input12 <= (others => '0');
-     input13 <= (others => '0');
-     input14 <= (others => '0');
-     input15 <= (others => '0');
-     input16 <= (others => '0');
-     input17 <= (others => '0');
-     input18 <= (others => '0');
-     input19 <= (others => '0');
-     input20 <= (others => '0');
-     input21 <= (others => '0');
-     input22 <= (others => '0');
-     input23 <= (others => '0');
-     input24 <= (others => '0');
-     input25 <= (others => '0');
-     input26 <= (others => '0');
-     input27 <= (others => '0');
-     input28 <= (others => '0');
-     input29 <= (others => '0');
-     input30 <= (others => '0');
-     input31 <= (others => '0');
-     input32 <= (others => '0');  
-elsif (clk'event and clk = '1') then 
-    input01 <= input01_nxt;
-    input02 <= input02_nxt;
-    input03 <= input03_nxt;
-    input04 <= input04_nxt;
-    input05 <= input05_nxt;
-    input06 <= input06_nxt;
-    input07 <= input07_nxt;
-    input08 <= input08_nxt;
-    input09 <= input09_nxt;
-    input10 <= input10_nxt;
-    input11 <= input11_nxt;
-    input12 <= input12_nxt;
-    input13 <= input13_nxt;
-    input14 <= input14_nxt;
-    input15 <= input15_nxt;
-    input16 <= input16_nxt;
-    input17 <= input17_nxt;
-    input18 <= input18_nxt;
-    input19 <= input19_nxt;
-    input20 <= input20_nxt;
-    input21 <= input21_nxt;
-    input22 <= input22_nxt;
-    input23 <= input23_nxt;
-    input24 <= input24_nxt;
-    input25 <= input25_nxt;
-    input26 <= input26_nxt;
-    input27 <= input27_nxt;
-    input28 <= input28_nxt;
-    input29 <= input29_nxt;
-    input30 <= input30_nxt;
-    input31 <= input31_nxt;
-    input32 <= input32_nxt;
-end if;
 
-end process;
+input01_nxt <= input_in(7 downto 0) when counter = "000001" else input01; 
+input02_nxt <= input_in(7 downto 0) when counter = "000010" else input02; 
+input03_nxt <= input_in(7 downto 0) when counter = "000011" else input03; 
+input04_nxt <= input_in(7 downto 0) when counter = "000100" else input04; 
+input05_nxt <= input_in(7 downto 0) when counter = "000101" else input05; 
+input06_nxt <= input_in(7 downto 0) when counter = "000110" else input06; 
+input07_nxt <= input_in(7 downto 0) when counter = "000111" else input07; 
+input08_nxt <= input_in(7 downto 0) when counter = "001000" else input08; 
+input09_nxt <= input_in(7 downto 0) when counter = "001001" else input09; 
+input10_nxt <= input_in(7 downto 0) when counter = "001010" else input10; 
+input11_nxt <= input_in(7 downto 0) when counter = "001011" else input11; 
+input12_nxt <= input_in(7 downto 0) when counter = "001100" else input12; 
+input13_nxt <= input_in(7 downto 0) when counter = "001101" else input13; 
+input14_nxt <= input_in(7 downto 0) when counter = "001110" else input14; 
+input15_nxt <= input_in(7 downto 0) when counter = "001111" else input15; 
+input16_nxt <= input_in(7 downto 0) when counter = "010000" else input16; 
+input17_nxt <= input_in(7 downto 0) when counter = "010001" else input17; 
+input18_nxt <= input_in(7 downto 0) when counter = "010010" else input18; 
+input19_nxt <= input_in(7 downto 0) when counter = "010011" else input19; 
+input20_nxt <= input_in(7 downto 0) when counter = "010100" else input20; 
+input21_nxt <= input_in(7 downto 0) when counter = "010101" else input21; 
+input22_nxt <= input_in(7 downto 0) when counter = "010110" else input22; 
+input23_nxt <= input_in(7 downto 0) when counter = "010111" else input23; 
+input24_nxt <= input_in(7 downto 0) when counter = "011000" else input24; 
+input25_nxt <= input_in(7 downto 0) when counter = "011001" else input25; 
+input26_nxt <= input_in(7 downto 0) when counter = "011010" else input26; 
+input27_nxt <= input_in(7 downto 0) when counter = "011011" else input27; 
+input28_nxt <= input_in(7 downto 0) when counter = "011100" else input28; 
+input29_nxt <= input_in(7 downto 0) when counter = "011101" else input29; 
+input30_nxt <= input_in(7 downto 0) when counter = "011110" else input30; 
+input31_nxt <= input_in(7 downto 0) when counter = "011111" else input31; 
+input32_nxt <= input_in(7 downto 0) when counter = "100000" else input32; 
+                
+ldinput_done <= '1' when counter = "100000" else '0';
 
+counter_ctrl: FF 
+  generic map(N => 6)
+  port map(   D     =>counter_nxt,
+              Q     =>counter,
+            clk     =>clk,
+            reset   =>reset
+      );
+
+input_01: FF 
+  generic map(N => 8)
+  port map(   D     =>input01_nxt,
+              Q     =>input01,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_02: FF 
+  generic map(N => 8)
+  port map(   D     =>input02_nxt,
+              Q     =>input02,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_03: FF 
+  generic map(N => 8)
+  port map(   D     =>input03_nxt,
+              Q     =>input03,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_04: FF 
+  generic map(N => 8)
+  port map(   D     =>input04_nxt,
+              Q     =>input04,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_05: FF 
+  generic map(N => 8)
+  port map(   D     =>input05_nxt,
+              Q     =>input05,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_06: FF 
+  generic map(N => 8)
+  port map(   D     =>input06_nxt,
+              Q     =>input06,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_07: FF 
+  generic map(N => 8)
+  port map(   D     =>input07_nxt,
+              Q     =>input07,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_08: FF 
+  generic map(N => 8)
+  port map(   D     =>input08_nxt,
+              Q     =>input08,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_09: FF 
+  generic map(N => 8)
+  port map(   D     =>input09_nxt,
+              Q     =>input09,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_10: FF 
+  generic map(N => 8)
+  port map(   D     =>input10_nxt,
+              Q     =>input10,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_11: FF 
+  generic map(N => 8)
+  port map(   D     =>input11_nxt,
+              Q     =>input11,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_12: FF 
+  generic map(N => 8)
+  port map(   D     =>input12_nxt,
+              Q     =>input12,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_13: FF 
+  generic map(N => 8)
+  port map(   D     =>input13_nxt,
+              Q     =>input13,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_14: FF 
+  generic map(N => 8)
+  port map(   D     =>input14_nxt,
+              Q     =>input14,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_15: FF 
+  generic map(N => 8)
+  port map(   D     =>input15_nxt,
+              Q     =>input15,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_16: FF 
+  generic map(N => 8)
+  port map(   D     =>input16_nxt,
+              Q     =>input16,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_17: FF 
+  generic map(N => 8)
+  port map(   D     =>input17_nxt,
+              Q     =>input17,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_18: FF 
+  generic map(N => 8)
+  port map(   D     =>input18_nxt,
+              Q     =>input18,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_19: FF 
+  generic map(N => 8)
+  port map(   D     =>input19_nxt,
+              Q     =>input19,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_20: FF 
+  generic map(N => 8)
+  port map(   D     =>input20_nxt,
+              Q     =>input20,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_21: FF 
+  generic map(N => 8)
+  port map(   D     =>input21_nxt,
+              Q     =>input21,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_22: FF 
+  generic map(N => 8)
+  port map(   D     =>input22_nxt,
+              Q     =>input22,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_23: FF 
+  generic map(N => 8)
+  port map(   D     =>input23_nxt,
+              Q     =>input23,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_24: FF 
+  generic map(N => 8)
+  port map(   D     =>input24_nxt,
+              Q     =>input24,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_25: FF 
+  generic map(N => 8)
+  port map(   D     =>input25_nxt,
+              Q     =>input25,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_26: FF 
+  generic map(N => 8)
+  port map(   D     =>input26_nxt,
+              Q     =>input26,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_27: FF 
+  generic map(N => 8)
+  port map(   D     =>input27_nxt,
+              Q     =>input27,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_28: FF 
+  generic map(N => 8)
+  port map(   D     =>input28_nxt,
+              Q     =>input28,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_29: FF 
+  generic map(N => 8)
+  port map(   D     =>input29_nxt,
+              Q     =>input29,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_30: FF 
+  generic map(N => 8)
+  port map(   D     =>input30_nxt,
+              Q     =>input30,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_31: FF 
+  generic map(N => 8)
+  port map(   D     =>input31_nxt,
+              Q     =>input31,
+            clk     =>clk,
+            reset   =>reset
+      );
+input_32: FF 
+  generic map(N => 8)
+  port map(   D     =>input32_nxt,
+              Q     =>input32,
+            clk     =>clk,
+            reset   =>reset
+      );                      
 
 
 

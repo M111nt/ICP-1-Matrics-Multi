@@ -41,16 +41,26 @@ component SRAM_SP_WRAPPER
     );
 end component;
 
+component ff is
+  generic(N:integer:=1);
+  port(   D  :  in std_logic_vector(N-1 downto 0);
+          Q  : out std_logic_vector(N-1 downto 0);
+        clk  :  in std_logic;
+        reset:  in std_logic
+      );
+end component;
 
-
-    type state_type is (s_idle, s_initial, s_load, s_keep, s_send);
+    type state_type is (s_initial, s_load, s_keep, s_send);
     signal state_reg, state_nxt : state_type;
 
     signal counter      : std_logic_vector(4 downto 0) := (others => '0');
     signal counter_nxt  : std_logic_vector(4 downto 0) := (others => '0');
+    signal counter_2    : std_logic_vector(4 downto 0) := (others => '0');
+    signal counter_2_nxt: std_logic_vector(4 downto 0) := (others => '0');
     
-    signal address_reg  : std_logic_vector(4 downto 0) := (others => '0');
-    signal address_nxt  : std_logic_vector(4 downto 0) := (others => '0');
+    
+--    signal address_reg  : std_logic_vector(4 downto 0) := (others => '0');
+--    signal address_nxt  : std_logic_vector(4 downto 0) := (others => '0');
     
     signal send_ctr     : std_logic_vector(4 downto 0) := (others => '0');
     signal send_ctr_nxt : std_logic_vector(4 downto 0) := (others => '0');
@@ -120,13 +130,31 @@ end component;
     signal coeff30_nxt  : std_logic_vector(6 downto 0);
     signal coeff31_nxt  : std_logic_vector(6 downto 0);
     signal coeff32_nxt  : std_logic_vector(6 downto 0);
+--    signal coeff_test1  : std_logic_vector(6 downto 0);
+--    signal coeff_test2  : std_logic_vector(6 downto 0);
+--    signal ctrl         : std_logic_vector(4 downto 0);    
+--    signal ctrl_nxt     : std_logic_vector(4 downto 0);
+    signal start_store  : std_logic;
+    
+    signal keep1        : std_logic_vector(13 downto 0);
+    signal keep2        : std_logic_vector(13 downto 0);
+    signal keep3        : std_logic_vector(13 downto 0);
+    signal keep4        : std_logic_vector(13 downto 0);
+    signal keep5        : std_logic_vector(13 downto 0);
+    signal keep6        : std_logic_vector(13 downto 0);
+    signal keep7        : std_logic_vector(13 downto 0);
+    signal keep8        : std_logic_vector(13 downto 0);
 
     signal coeff_in     : std_logic_vector(31 downto 0);
     --signal data_in      : std_logic_vector(31 downto 0);
     signal choose       : std_logic;
     signal address      : std_logic_vector(7 downto 0);
+    signal address_out  : std_logic_vector(7 downto 0);
     signal RY_ram       : std_logic;
     signal dataxdi      : std_logic_vector(31 downto 0);
+    
+--    signal test : std_logic_vector(13 downto 0);
+
 
 begin
 Ram_coeff: SRAM_SP_WRAPPER
@@ -143,102 +171,28 @@ port map(
 --dataxdi <= "000000000000000000" & coeff_read;
 
 
-
-
-
 --state contrl--------------------------------
 process(clk, reset)
 begin
     if reset = '1' then 
-        state_reg <= s_idle; 
-        counter <= (others => '0');
-        address_reg <= (others => '0');
+        state_reg <= s_initial; 
+        --counter <= (others => '0');
+        --address_reg <= (others => '0');
         send_ctr <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
 
-        counter <= counter_nxt;
-        address_reg <= address_nxt;
+        --counter <= counter_nxt;
+        --address_reg <= address_nxt;
         send_ctr <= send_ctr_nxt;
     end if;
 
 end process;
 
-process(clk, reset)
-begin
-    if reset = '1' then 
-     coeff01 <= (others => '0');
-     coeff02 <= (others => '0');
-     coeff03 <= (others => '0');
-     coeff04 <= (others => '0');
-     coeff05 <= (others => '0');
-     coeff06 <= (others => '0');
-     coeff07 <= (others => '0');
-     coeff08 <= (others => '0');
-     coeff09 <= (others => '0');
-     coeff10 <= (others => '0');
-     coeff11 <= (others => '0');
-     coeff12 <= (others => '0');
-     coeff13 <= (others => '0');
-     coeff14 <= (others => '0');
-     coeff15 <= (others => '0');
-     coeff16 <= (others => '0');
-     coeff17 <= (others => '0');
-     coeff18 <= (others => '0');
-     coeff19 <= (others => '0');
-     coeff20 <= (others => '0');
-     coeff21 <= (others => '0');
-     coeff22 <= (others => '0');
-     coeff23 <= (others => '0');
-     coeff24 <= (others => '0');
-     coeff25 <= (others => '0');
-     coeff26 <= (others => '0');
-     coeff27 <= (others => '0');
-     coeff28 <= (others => '0');
-     coeff29 <= (others => '0');
-     coeff30 <= (others => '0');
-     coeff31 <= (others => '0');
-     coeff32 <= (others => '0');   
-    elsif (clk'event and clk = '1') then 
-     coeff01 <= coeff01_nxt;
-     coeff02 <= coeff02_nxt;
-     coeff03 <= coeff03_nxt;
-     coeff04 <= coeff04_nxt;
-     coeff05 <= coeff05_nxt;
-     coeff06 <= coeff06_nxt;
-     coeff07 <= coeff07_nxt;
-     coeff08 <= coeff08_nxt;
-     coeff09 <= coeff09_nxt;
-     coeff10 <= coeff10_nxt;
-     coeff11 <= coeff11_nxt;
-     coeff12 <= coeff12_nxt;
-     coeff13 <= coeff13_nxt;
-     coeff14 <= coeff14_nxt;
-     coeff15 <= coeff15_nxt;
-     coeff16 <= coeff16_nxt;
-     coeff17 <= coeff17_nxt;
-     coeff18 <= coeff18_nxt;
-     coeff19 <= coeff19_nxt;
-     coeff20 <= coeff20_nxt;
-     coeff21 <= coeff21_nxt;
-     coeff22 <= coeff22_nxt;
-     coeff23 <= coeff23_nxt;
-     coeff24 <= coeff24_nxt;
-     coeff25 <= coeff25_nxt;
-     coeff26 <= coeff26_nxt;
-     coeff27 <= coeff27_nxt;
-     coeff28 <= coeff28_nxt;
-     coeff29 <= coeff29_nxt;
-     coeff30 <= coeff30_nxt;
-     coeff31 <= coeff31_nxt;
-     coeff32 <= coeff32_nxt;
-    end if;
-
-end process;
 
 --state machine--------------------------------------------
 --, ldcoeff_enable, address_reg, send_ctr
-process(state_reg, counter, ldcoeff_enable, address_reg, send_ctr)
+process(state_reg, counter, ldcoeff_enable, send_ctr, counter_2)
 begin
     choose <= '1';
     dataxdi <= (others => '0');
@@ -248,55 +202,28 @@ begin
     coeff <= (others => '0');
     ldcoeff_done <= '0';
     counter_nxt <= (others => '0'); 
-    address_nxt <= (others => '0');
-    send_ctr_nxt <= send_ctr;
+    counter_2_nxt <= (others => '0');
+    --address_nxt <= (others => '0');
+ 
+    --send_ctr_nxt <= send_ctr;
     
-    coeff01_nxt <= coeff01;
-    coeff02_nxt <= coeff02;
-    coeff03_nxt <= coeff03;
-    coeff04_nxt <= coeff04;
-    coeff05_nxt <= coeff05;
-    coeff06_nxt <= coeff06;
-    coeff07_nxt <= coeff07;
-    coeff08_nxt <= coeff08;
-    coeff09_nxt <= coeff09;
-    coeff10_nxt <= coeff10;
-    coeff11_nxt <= coeff11;
-    coeff12_nxt <= coeff12;
-    coeff13_nxt <= coeff13;
-    coeff14_nxt <= coeff14;
-    coeff15_nxt <= coeff15;
-    coeff16_nxt <= coeff16;
-    coeff17_nxt <= coeff17;
-    coeff18_nxt <= coeff18;
-    coeff19_nxt <= coeff19;
-    coeff20_nxt <= coeff20;
-    coeff21_nxt <= coeff21;
-    coeff22_nxt <= coeff22;
-    coeff23_nxt <= coeff23;
-    coeff24_nxt <= coeff24;
-    coeff25_nxt <= coeff25;
-    coeff26_nxt <= coeff26;
-    coeff27_nxt <= coeff27;
-    coeff28_nxt <= coeff28;
-    coeff29_nxt <= coeff29;
-    coeff30_nxt <= coeff30;
-    coeff31_nxt <= coeff31;
-    coeff32_nxt <= coeff32;
+
+    address <= (others => '0');
+    
+    start_store <= '0';
+--    ctrl_nxt <= ctrl;
 
     case state_reg is 
-        when s_idle =>
-            state_nxt <= s_initial;
         when s_initial => 
             ctrl_coeff <= (others => '0');      
             coeff <= (others => '0'); 
             ldcoeff_done <= '0'; 
             ld2mem <= '0';
             counter_nxt <= (others => '0');
-            address <= (others => '0');
+--            address_s <= (others => '0');
             
             --address_reg <= (others => '0');
-            address_nxt <= (others => '0');
+            --address_nxt <= (others => '0');
             send_ctr_nxt <= (others => '0');
             
             if ldcoeff_enable = '1' then 
@@ -306,7 +233,7 @@ begin
             end if;
         
         when s_load => --load coefficients from txt to memory
-            ldcoeff_done <= '0';
+            --ldcoeff_done <= '0';
             counter_nxt <= counter + 1;
             choose <= '0';--write
             address <= "000" & counter;
@@ -321,28 +248,17 @@ begin
             
         when s_keep =>  
         choose <= '1';--read
-            case address_reg is 
-                when "00000" => address <= "00000000"; address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00001" => address <= "00000001";  address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00010" => address <= "00000010"; coeff01_nxt <= coeff_in(13 downto 7); coeff05_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00011" => address <= "00000011"; coeff09_nxt <= coeff_in(13 downto 7); coeff13_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00100" => address <= "00000100"; coeff17_nxt <= coeff_in(13 downto 7); coeff21_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00101" => address <= "00000101"; coeff25_nxt <= coeff_in(13 downto 7); coeff29_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00110" => address <= "00000110"; coeff02_nxt <= coeff_in(13 downto 7); coeff06_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "00111" => address <= "00000111"; coeff10_nxt <= coeff_in(13 downto 7); coeff14_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01000" => address <= "00001000"; coeff18_nxt <= coeff_in(13 downto 7); coeff22_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01001" => address <= "00001001"; coeff26_nxt <= coeff_in(13 downto 7); coeff30_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01010" => address <= "00001010"; coeff03_nxt <= coeff_in(13 downto 7); coeff07_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01011" => address <= "00001011"; coeff11_nxt <= coeff_in(13 downto 7); coeff15_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01100" => address <= "00001100"; coeff19_nxt <= coeff_in(13 downto 7); coeff23_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01101" => address <= "00001101"; coeff27_nxt <= coeff_in(13 downto 7); coeff31_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01110" => address <= "00001110"; coeff04_nxt <= coeff_in(13 downto 7); coeff08_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "01111" => address <= "00001111"; coeff12_nxt <= coeff_in(13 downto 7); coeff16_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "10000" => coeff20_nxt <= coeff_in(13 downto 7); coeff24_nxt <= coeff_in(6 downto 0); address_nxt <= address_reg + 1; state_nxt <= s_keep;
-                when "10001" => coeff28_nxt <= coeff_in(13 downto 7); coeff32_nxt <= coeff_in(6 downto 0); address_nxt <= (others => '0');state_nxt <= s_send;
-                when others => address <= "00000000"; state_nxt <= s_keep;
-                
-            end case;
+        address <= "000" & counter_2;
+        --ctrl_nxt <= ctrl + 1;
+        counter_2_nxt <= counter_2 + 1;
+        --start_store <= '1';
+        --address_nxt <= address_reg + 1;
+        
+        if counter_2 > 15 then 
+            state_nxt <= s_send;
+        else 
+            state_nxt <= s_keep;
+        end if;
         
         when s_send => 
             case send_ctr is 
@@ -386,6 +302,346 @@ begin
     end case;
 
 end process;
+
+coeff01_nxt <= coeff_in(13 downto 7)    when counter_2 = "00001" else coeff01; 
+coeff05_nxt <= coeff_in(6 downto 0)     when counter_2 = "00001" else coeff05;
+coeff09_nxt <= coeff_in(13 downto 7)    when counter_2 = "00010" else coeff09; 
+coeff13_nxt <= coeff_in(6 downto 0)     when counter_2 = "00010" else coeff13;
+coeff17_nxt <= coeff_in(13 downto 7)    when counter_2 = "00011" else coeff17; 
+coeff21_nxt <= coeff_in(6 downto 0)     when counter_2 = "00011" else coeff21;
+coeff25_nxt <= coeff_in(13 downto 7)    when counter_2 = "00100" else coeff25; 
+coeff29_nxt <= coeff_in(6 downto 0)     when counter_2 = "00100" else coeff29;
+coeff02_nxt <= coeff_in(13 downto 7)    when counter_2 = "00101" else coeff02; 
+coeff06_nxt <= coeff_in(6 downto 0)     when counter_2 = "00101" else coeff06;
+coeff10_nxt <= coeff_in(13 downto 7)    when counter_2 = "00110" else coeff10; 
+coeff14_nxt <= coeff_in(6 downto 0)     when counter_2 = "00110" else coeff14;
+coeff18_nxt <= coeff_in(13 downto 7)    when counter_2 = "00111" else coeff18; 
+coeff22_nxt <= coeff_in(6 downto 0)     when counter_2 = "00111" else coeff22;
+coeff26_nxt <= coeff_in(13 downto 7)    when counter_2 = "01000" else coeff26; 
+coeff30_nxt <= coeff_in(6 downto 0)     when counter_2 = "01000" else coeff30;
+coeff03_nxt <= coeff_in(13 downto 7)    when counter_2 = "01001" else coeff03; 
+coeff07_nxt <= coeff_in(6 downto 0)     when counter_2 = "01001" else coeff07;
+coeff11_nxt <= coeff_in(13 downto 7)    when counter_2 = "01010" else coeff11; 
+coeff15_nxt <= coeff_in(6 downto 0)     when counter_2 = "01010" else coeff15;
+coeff19_nxt <= coeff_in(13 downto 7)    when counter_2 = "01011" else coeff19; 
+coeff23_nxt <= coeff_in(6 downto 0)     when counter_2 = "01011" else coeff23;
+coeff27_nxt <= coeff_in(13 downto 7)    when counter_2 = "01100" else coeff27; 
+coeff31_nxt <= coeff_in(6 downto 0)     when counter_2 = "01100" else coeff31;
+coeff04_nxt <= coeff_in(13 downto 7)    when counter_2 = "01101" else coeff04; 
+coeff08_nxt <= coeff_in(6 downto 0)     when counter_2 = "01101" else coeff08;
+coeff12_nxt <= coeff_in(13 downto 7)    when counter_2 = "01110" else coeff12; 
+coeff16_nxt <= coeff_in(6 downto 0)     when counter_2 = "01110" else coeff16;
+coeff20_nxt <= coeff_in(13 downto 7)    when counter_2 = "01111" else coeff20; 
+coeff24_nxt <= coeff_in(6 downto 0)     when counter_2 = "01111" else coeff24;
+coeff28_nxt <= coeff_in(13 downto 7)    when counter_2 = "10000" else coeff28; 
+coeff32_nxt <= coeff_in(6 downto 0)     when counter_2 = "10000" else coeff32;
+
+
+
+counter_ff: FF
+generic map(N => 5)
+  port map(   D     =>counter_nxt,
+              Q     =>counter,
+            clk     =>clk,
+            reset   =>reset
+      );
+
+--address_ctrl: FF
+--  generic map(N => 5)
+--  port map(   D     =>address_nxt,
+--              Q     =>address_reg,
+--            clk     =>clk,
+--            reset   =>reset
+--      );
+
+
+
+counter_2_ff: FF 
+  generic map(N => 5)
+  port map(   D     =>counter_2_nxt,
+              Q     =>counter_2,
+            clk     =>clk,
+            reset   =>reset
+      );
+
+
+coeff_01: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff01_nxt,
+              Q     =>coeff01,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_02: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff02_nxt,
+              Q     =>coeff02,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_03: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff03_nxt,
+              Q     =>coeff03,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_04: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff04_nxt,
+              Q     =>coeff04,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_05: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff05_nxt,
+              Q     =>coeff05,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_06: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff06_nxt,
+              Q     =>coeff06,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_07: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff07_nxt,
+              Q     =>coeff07,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_08: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff08_nxt,
+              Q     =>coeff08,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_09: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff09_nxt,
+              Q     =>coeff09,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_10: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff10_nxt,
+              Q     =>coeff10,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_11: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff11_nxt,
+              Q     =>coeff11,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_12: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff12_nxt,
+              Q     =>coeff12,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_13: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff13_nxt,
+              Q     =>coeff13,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_14: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff14_nxt,
+              Q     =>coeff14,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_15: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff15_nxt,
+              Q     =>coeff15,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_16: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff16_nxt,
+              Q     =>coeff16,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_17: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff17_nxt,
+              Q     =>coeff17,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_18: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff18_nxt,
+              Q     =>coeff18,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_19: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff19_nxt,
+              Q     =>coeff19,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_20: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff20_nxt,
+              Q     =>coeff20,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_21: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff21_nxt,
+              Q     =>coeff21,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_22: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff22_nxt,
+              Q     =>coeff22,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_23: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff23_nxt,
+              Q     =>coeff23,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_24: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff24_nxt,
+              Q     =>coeff24,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_25: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff25_nxt,
+              Q     =>coeff25,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_26: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff26_nxt,
+              Q     =>coeff26,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_27: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff27_nxt,
+              Q     =>coeff27,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_28: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff28_nxt,
+              Q     =>coeff28,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_29: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff29_nxt,
+              Q     =>coeff29,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_30: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff30_nxt,
+              Q     =>coeff30,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_31: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff31_nxt,
+              Q     =>coeff31,
+            clk     =>clk,
+            reset   =>reset
+      );
+coeff_32: FF 
+  generic map(N => 7)
+  port map(   D     =>coeff32_nxt,
+              Q     =>coeff32,
+            clk     =>clk,
+            reset   =>reset
+      );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 end Behavioral;

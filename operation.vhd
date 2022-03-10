@@ -16,10 +16,10 @@ entity operation is
         
         op_done         : out std_logic;
         
-        result1         : out std_logic_vector(18 downto 0);
-        result2         : out std_logic_vector(18 downto 0);
-        result3         : out std_logic_vector(18 downto 0);
-        result4         : out std_logic_vector(18 downto 0);
+        result1_out     : out std_logic_vector(18 downto 0);
+        result2_out     : out std_logic_vector(18 downto 0);
+        result3_out     : out std_logic_vector(18 downto 0);
+        result4_out     : out std_logic_vector(18 downto 0);
 
         --to the compare---------------------------------------------
         compare_out     : out std_logic_vector(18 downto 0)
@@ -29,7 +29,7 @@ end operation;
 
 architecture Behavioral of operation is
     
-    type state_type is (s_initial, s_store, s_mult1, s_mult2, s_mult3, s_mult4, s_add, s_send_data, s_send_compare);
+    type state_type is (s_initial, s_store, s_mult1, s_keep1, s_mult2, s_keep2, s_mult3, s_keep3, s_mult4, s_keep4, s_add, s_send_data, s_send_compare);
     signal state_reg, state_nxt : state_type;
     
     signal output_test  : std_logic_vector(16 downto 0);
@@ -133,14 +133,14 @@ architecture Behavioral of operation is
     signal output_reg7  : std_logic_vector(15 downto 0);
     signal output_reg8  : std_logic_vector(15 downto 0);
     
---    signal output_reg1_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg2_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg3_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg4_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg5_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg6_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg7_nxt  : std_logic_vector(15 downto 0);
---    signal output_reg8_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg1_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg2_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg3_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg4_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg5_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg6_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg7_nxt  : std_logic_vector(15 downto 0);
+    signal output_reg8_nxt  : std_logic_vector(15 downto 0);
     
 --    signal output_tran1 : std_logic_vector(18 downto 0);
 --    signal output_tran2 : std_logic_vector(18 downto 0);
@@ -156,37 +156,96 @@ architecture Behavioral of operation is
     signal output3      : std_logic_vector(18 downto 0);
     signal output4      : std_logic_vector(18 downto 0);
     
---    signal result1_nxt  : std_logic_vector(18 downto 0);
---    signal result2_nxt  : std_logic_vector(18 downto 0);
---    signal result3_nxt  : std_logic_vector(18 downto 0);
---    signal result4_nxt  : std_logic_vector(18 downto 0);
+    signal output1_nxt  : std_logic_vector(18 downto 0);
+    signal output2_nxt  : std_logic_vector(18 downto 0);
+    signal output3_nxt  : std_logic_vector(18 downto 0);
+    signal output4_nxt  : std_logic_vector(18 downto 0);
+    
+    signal result1      : std_logic_vector(18 downto 0);
+    signal result2      : std_logic_vector(18 downto 0);
+    signal result3      : std_logic_vector(18 downto 0);
+    signal result4      : std_logic_vector(18 downto 0);
+    signal result1_nxt  : std_logic_vector(18 downto 0);
+    signal result2_nxt  : std_logic_vector(18 downto 0);
+    signal result3_nxt  : std_logic_vector(18 downto 0);
+    signal result4_nxt  : std_logic_vector(18 downto 0);
     
     signal compare      : std_logic_vector(18 downto 0) := (others => '0');
     signal compare_nxt  : std_logic_vector(18 downto 0) := (others => '0');
 
     signal mult1, mult2, mult3, mult4 : std_logic_vector(7 downto 0);
+    signal mult1_nxt, mult2_nxt, mult3_nxt, mult4_nxt : std_logic_vector(7 downto 0);
     signal result_1, result_2         : std_logic_vector(15 downto 0);
 
 begin
 
 --state ctrl-----------------------------------
-process (clk, reset, column_nxt, compare_nxt)
+process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_initial; 
-        column <= "00";
-        compare <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-        column <= column_nxt;
-        compare <= compare_nxt;
     end if;         
 end process;
 
 result_1 <= mult1 * mult2; 
 result_2 <= mult3 * mult4;
+
+result1_out <= result1;
+result2_out <= result2;
+result3_out <= result3;
+result4_out <= result4;
+
+compare_out <= compare;
+------------------------------------------------------------------------------
+process (clk, reset)
+begin
+    if reset = '1' then 
+        column <= "00";
+        compare <= (others => '0');
+        output_reg1 <= (others => '0');
+        output_reg2 <= (others => '0');
+        output_reg3 <= (others => '0');
+        output_reg4 <= (others => '0');
+        output_reg5 <= (others => '0');
+        output_reg6 <= (others => '0');
+        output_reg7 <= (others => '0');
+        output_reg8 <= (others => '0');
+        output1 <= (others => '0');
+        output2 <= (others => '0');
+        output3 <= (others => '0');
+        output4 <= (others => '0');
+        mult1 <= (others => '0');
+        mult2 <= (others => '0');
+        mult3 <= (others => '0');
+        mult4 <= (others => '0');
+
+    elsif (clk'event and clk = '1') then 
+        column <= column_nxt;
+        compare <= compare_nxt;
+        output_reg1 <= output_reg1_nxt;
+        output_reg2 <= output_reg2_nxt;
+        output_reg3 <= output_reg3_nxt;
+        output_reg4 <= output_reg4_nxt;
+        output_reg5 <= output_reg5_nxt;
+        output_reg6 <= output_reg6_nxt;
+        output_reg7 <= output_reg7_nxt;
+        output_reg8 <= output_reg8_nxt;
+        output1 <= output1_nxt;
+        output2 <= output2_nxt;
+        output3 <= output3_nxt;
+        output4 <= output4_nxt;
+        mult1 <= mult1_nxt;
+        mult2 <= mult2_nxt;
+        mult3 <= mult3_nxt;
+        mult4 <= mult4_nxt;
+
+    end if;         
+end process;
+
 -----------------------------------------
-process (state_reg, column, data2op_done,--flag_data2op, -- 
+process (state_reg, data2op_done,--flag_data2op, -- 
 --        input01, input02, input03, input04, input05, input06, input07, input08,
 --        coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
 --        coeff11, coeff12, coeff13, coeff14, coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
@@ -198,19 +257,42 @@ process (state_reg, column, data2op_done,--flag_data2op, --
         )
 
 begin 
-
---        result1_nxt <= result1;
---        result2_nxt <= result2;
---        result3_nxt <= result3;
---        result4_nxt <= result4;
-
+    
+    op_done <= '0';
+    result1_nxt <= result1;
+    result2_nxt <= result2;
+    result3_nxt <= result3;
+    result4_nxt <= result4;
+    
+    column_nxt <= column;
+    
+    
+    output_reg1_nxt <= output_reg1;
+    output_reg2_nxt <= output_reg2;
+    output_reg3_nxt <= output_reg3;
+    output_reg4_nxt <= output_reg4;
+    output_reg5_nxt <= output_reg5;
+    output_reg6_nxt <= output_reg6;
+    output_reg7_nxt <= output_reg7;
+    output_reg8_nxt <= output_reg8;
+    
+    output1_nxt <= output1;
+    output2_nxt <= output2;
+    output3_nxt <= output3;
+    output4_nxt <= output4;
+    mult1_nxt <= mult1;
+    mult2_nxt <= mult2;
+    mult3_nxt <= mult3;
+    mult4_nxt <= mult4;
+    
+    compare_nxt <= compare;
 
     case state_reg is 
         
         when s_initial => 
             column_nxt <= "00";
             op_done <= '0';
-            compare_out <= (others => '0');
+            --compare_out <= (others => '0');
             if op_en = '1' then 
                 state_nxt <= s_store;
             else
@@ -225,62 +307,106 @@ begin
             end if;
         
         when s_mult1 => 
-            state_nxt <= s_mult2;
+            state_nxt <= s_keep1;
             case column is
-                when "00" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff01; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff05;
-                when "01" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff02; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff06;
-                when "10" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff03; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff07;
-                when "11" => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff04; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff08;
-                when others => output_reg1 <= result_1; mult1 <= input01; mult2 <= coeff01; output_reg2 <= result_2; mult3 <= input02; mult4 <= coeff05;
+                when "00" => mult1_nxt <= input01; mult2_nxt <= coeff01; mult3_nxt <= input02; mult4_nxt <= coeff05;
+                when "01" => mult1_nxt <= input01; mult2_nxt <= coeff02; mult3_nxt <= input02; mult4_nxt <= coeff06;
+                when "10" => mult1_nxt <= input01; mult2_nxt <= coeff03; mult3_nxt <= input02; mult4_nxt <= coeff07;
+                when "11" => mult1_nxt <= input01; mult2_nxt <= coeff04; mult3_nxt <= input02; mult4_nxt <= coeff08;
+                when others => mult1_nxt <= input01; mult2_nxt <= coeff01; mult3_nxt <= input02; mult4_nxt <= coeff05;
             end case;
+            
+        when s_keep1 => 
+            state_nxt <= s_mult2;
+            output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--            case column is
+--                when "00" => output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--                when "01" => output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--                when "10" => output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--                when "11" => output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--                when others => output_reg1_nxt <= result_1; output_reg2_nxt <= result_2;
+--            end case;
             
         when s_mult2 => 
-            state_nxt <= s_mult3;
+            state_nxt <= s_keep2;
             case column is
-                when "00" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff09; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff13;
-                when "01" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff10; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff14;
-                when "10" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff11; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff15;
-                when "11" => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff12; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff16;
-                when others => output_reg3 <= result_1; mult1 <= input03; mult2 <= coeff09; output_reg4 <= result_2; mult3 <= input04; mult4 <= coeff13;
+                when "00" => mult1_nxt <= input03; mult2_nxt <= coeff09; mult3_nxt <= input04; mult4_nxt <= coeff13;
+                when "01" => mult1_nxt <= input03; mult2_nxt <= coeff10; mult3_nxt <= input04; mult4_nxt <= coeff14;
+                when "10" => mult1_nxt <= input03; mult2_nxt <= coeff11; mult3_nxt <= input04; mult4_nxt <= coeff15;
+                when "11" => mult1_nxt <= input03; mult2_nxt <= coeff12; mult3_nxt <= input04; mult4_nxt <= coeff16;
+                when others => mult1_nxt <= input03; mult2_nxt <= coeff09; mult3_nxt <= input04; mult4_nxt <= coeff13;
             end case;
         
+        when s_keep2 => 
+            state_nxt <= s_mult3;
+            output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--            case column is
+--                when "00" => output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--                when "01" => output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--                when "10" => output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--                when "11" => output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--                when others => output_reg3_nxt <= result_1; output_reg4_nxt <= result_2;
+--            end case;
+        
         when s_mult3 => 
-            state_nxt <= s_mult4;
+            state_nxt <= s_keep3;
             case column is 
-                when "00" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff17; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff21; 
-                when "01" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff18; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff22; 
-                when "10" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff19; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff23; 
-                when "11" => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff20; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff24; 
-                when others => output_reg5 <= result_1; mult1 <= input05; mult2 <= coeff17; output_reg6 <= result_2; mult3 <= input06; mult4 <= coeff21;
+                when "00" => mult1_nxt <= input05; mult2_nxt <= coeff17; mult3_nxt <= input06; mult4_nxt <= coeff21; 
+                when "01" => mult1_nxt <= input05; mult2_nxt <= coeff18; mult3_nxt <= input06; mult4_nxt <= coeff22; 
+                when "10" => mult1_nxt <= input05; mult2_nxt <= coeff19; mult3_nxt <= input06; mult4_nxt <= coeff23; 
+                when "11" => mult1_nxt <= input05; mult2_nxt <= coeff20; mult3_nxt <= input06; mult4_nxt <= coeff24; 
+                when others => mult1_nxt <= input05; mult2_nxt <= coeff17; mult3_nxt <= input06; mult4_nxt <= coeff21;
             end case;
+        
+        when s_keep3 => 
+            state_nxt <= s_mult4;
+            output_reg5_nxt <= result_1; output_reg6_nxt <= result_2;
+--            case column is 
+--                when "00" => output_reg5_nxt <= result_1; output_reg6_nxt <= result_2; 
+--                when "01" => output_reg5_nxt <= result_1; output_reg6_nxt <= result_2; 
+--                when "10" => output_reg5_nxt <= result_1; output_reg6_nxt <= result_2; 
+--                when "11" => output_reg5_nxt <= result_1; output_reg6_nxt <= result_2; 
+--                when others => output_reg5_nxt <= result_1; output_reg6_nxt<= result_2;
+--            end case;
             
         when s_mult4 => 
-            state_nxt <= s_add;
+            state_nxt <= s_keep4;
             case column is 
-                when "00" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff25; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff29; 
-                when "01" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff26; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff30; 
-                when "10" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff27; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff31; 
-                when "11" => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff28; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff32; 
-                when others => output_reg7 <= result_1; mult1 <= input07; mult2 <= coeff25; output_reg8 <= result_2; mult3 <= input08; mult4 <= coeff29; 
+                when "00" => mult1_nxt <= input07; mult2_nxt <= coeff25; mult3_nxt <= input08; mult4_nxt <= coeff29; 
+                when "01" => mult1_nxt <= input07; mult2_nxt <= coeff26; mult3_nxt <= input08; mult4_nxt <= coeff30; 
+                when "10" => mult1_nxt <= input07; mult2_nxt <= coeff27; mult3_nxt <= input08; mult4_nxt <= coeff31; 
+                when "11" => mult1_nxt <= input07; mult2_nxt <= coeff28; mult3_nxt <= input08; mult4_nxt <= coeff32; 
+                when others => mult1_nxt <= input07; mult2_nxt <= coeff25; mult3_nxt <= input08; mult4_nxt <= coeff29; 
              end case;  
+
+        when s_keep4 => 
+            state_nxt <= s_add;
+            output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--            case column is 
+--                when "00" => output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--                when "01" => output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--                when "10" => output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--                when "11" => output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--                when others => output_reg7_nxt <= result_1; output_reg8_nxt <= result_2;
+--             end case; 
 
         when s_add => 
             case column is 
                 when "00" => 
                     --output1 <= output_tran1 + output_tran2 + output_tran3 + output_tran4 + output_tran5 + output_tran6 + output_tran7 + output_tran8; 
-                    output1 <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
+                    output1_nxt <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
                     state_nxt <= s_send_data;
                 when "01" => 
                     --output2 <= output_tran1 + output_tran2 + output_tran3 + output_tran4 + output_tran5 + output_tran6 + output_tran7 + output_tran8;                 
-                    output2 <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
+                    output2_nxt <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
                     state_nxt <= s_send_data;
                 when "10" => 
                     --output3 <= output_tran1 + output_tran2 + output_tran3 + output_tran4 + output_tran5 + output_tran6 + output_tran7 + output_tran8;
-                    output3 <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
+                    output3_nxt <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
                     state_nxt <= s_send_data;
                 when "11" => 
                     --output4 <= output_tran1 + output_tran2 + output_tran3 + output_tran4 + output_tran5 + output_tran6 + output_tran7 + output_tran8;
-                    output4 <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
+                    output4_nxt <= output_reg1 + output_reg2 + output_reg3 + output_reg4 + output_reg5 + output_reg6 + output_reg7 + output_reg8 + "0000000000000000000";
                     state_nxt <= s_send_data;
                 when others => 
                     --output1 <= output_tran1 + output_tran2 + output_tran3 + output_tran4 + output_tran5 + output_tran6 + output_tran7 + output_tran8;                   
@@ -291,8 +417,8 @@ begin
             case column is 
                 when "00" => 
                     state_nxt <= s_mult1;
-                    column_nxt <= "01";
-                    result1 <= output1; 
+                    column_nxt <= column + 1;
+                    result1_nxt <= output1; 
                     if compare < output1 then 
                         compare_nxt <= output1; 
                     else
@@ -301,8 +427,8 @@ begin
                     
                 when "01" => 
                     state_nxt <= s_mult1;
-                    column_nxt <= "10";  
-                    result2 <= output2;
+                    column_nxt <= column + 1;  
+                    result2_nxt <= output2;
                     if compare < output2 then 
                         compare_nxt <= output2;
                     else 
@@ -311,8 +437,8 @@ begin
                     
                 when "10" => 
                     state_nxt <= s_mult1;
-                    column_nxt <= "11"; 
-                    result3 <= output3;
+                    column_nxt <= column + 1; 
+                    result3_nxt <= output3;
                     if compare < output3 then 
                         compare_nxt <= output3;
                     else 
@@ -322,7 +448,7 @@ begin
                 when "11" => 
                     state_nxt <= s_send_compare;                    
                     column_nxt <= "00"; 
-                    result4 <= output4;  
+                    result4_nxt <= output4;  
                     if compare < output4 then 
                         compare_nxt <= output4;
                     else 
@@ -335,7 +461,7 @@ begin
         
         when s_send_compare => 
             op_done <= '1';
-            compare_out <= compare;
+            --compare_out <= compare;
             state_nxt <= s_initial; 
     end case;
 
@@ -387,10 +513,10 @@ begin
         input06 <= (others => '0');
         input07 <= (others => '0');
         input08 <= (others => '0');
---        result1 <= (others => '0');
---        result2 <= (others => '0');
---        result3 <= (others => '0');
---        result4 <= (others => '0');
+        result1 <= (others => '0');
+        result2 <= (others => '0');
+        result3 <= (others => '0');
+        result4 <= (others => '0');
     elsif (clk'event and clk = '1') then
         coeff01 <= coeff01_nxt;
         coeff02 <= coeff02_nxt;
@@ -432,14 +558,14 @@ begin
         input06 <= input06_nxt;
         input07 <= input07_nxt;
         input08 <= input08_nxt;
---        result1 <= result1_nxt;
---        result2 <= result2_nxt;
---        result3 <= result3_nxt;
---        result4 <= result4_nxt;
+        result1 <= result1_nxt;
+        result2 <= result2_nxt;
+        result3 <= result3_nxt;
+        result4 <= result4_nxt;
     end if;
 end process;
 
-store_data : process( address2op)--start_store,
+store_data : process( address2op, data2op)--start_store,
 begin 
         coeff01_nxt <= coeff01;
         coeff02_nxt <= coeff02;

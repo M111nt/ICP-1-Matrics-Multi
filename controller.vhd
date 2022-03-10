@@ -202,12 +202,14 @@ process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_coeff2mem; 
-        --column <= (others => '0');
+        column <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-        --column <= column_nxt;
+        column <= column_nxt;
     end if;         
 end process;
+
+column_out <= column;
 
 --state machine-------------------------------------
 state_machine:process (state_reg, start, 
@@ -217,6 +219,7 @@ state_machine:process (state_reg, start,
         mean1, mean2, mean3, mean4, mean_reg
         )
 begin
+    ldcoeff_enable <= '0';
     ldinput_enable <= '0';
     load_en <= '0';
     op_en <= '0';
@@ -234,9 +237,9 @@ begin
     result2_reg <= (others => '0');
     result3_reg <= (others => '0');
     result4_reg <= (others => '0');
-    column_out <= (others => '0');
+    --column_out <= (others => '0');
     --column_nxt <= column;
-
+    column_nxt <= column;
 
 
     case state_reg is 
@@ -258,7 +261,7 @@ begin
             ldcoeff_enable <= '0';
             ldcoeff_controller <= '0';
             ldinput_enable <= '1'; 
-            column <= column_nxt;
+            --column <= column_nxt;
             --control the result of mean         
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
@@ -282,8 +285,8 @@ begin
         when s_load => 
             load_en <= '1'; 
             ldinput_controller <= '1';
-            column <= column_nxt;
-            column_out <= column_nxt;
+--            column <= column_nxt;
+--            column_out <= column_nxt;
             op_en <= '0'; 
             op_controller <= '0';  
             store_en <= '0';

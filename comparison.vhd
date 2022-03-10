@@ -20,7 +20,7 @@ architecture Behavioral of comparison is
     signal reg      : std_logic_vector(18 downto 0) := (others => '0');
     signal reg_nxt  : std_logic_vector(18 downto 0);-- := (others => '0');
 
-    --signal start_com: std_logic;
+    signal compare_result_nxt : std_logic_vector(18 downto 0);
 
     type state_type is (s_compare, s_send);
     signal state_reg, state_nxt : state_type;
@@ -36,12 +36,23 @@ begin
     end if;         
 end process;
 
-state_machine: process (state_reg, max_en, reg, reg_nxt, compare_out)
+process (clk, reset)
+begin
+    if reset = '1' then 
+        reg <= (others => '0');
+        compare_result <= (others => '0');
+    elsif (clk'event and clk = '1') then 
+        reg <= reg_nxt;
+        compare_result <= compare_result_nxt;
+    end if;         
+end process;
+
+state_machine: process (state_reg, max_en, reg) --, reg, reg_nxt, )
 begin 
+    compare_result_nxt <= (others => '0');
     case state_reg is 
  
         when s_compare =>
-            reg_nxt <= compare_out;
             if max_en = '1' then 
                 state_nxt <= s_send;
             else 
@@ -49,14 +60,13 @@ begin
             end if;
             
         when s_send => 
-           compare_result <= reg; 
-           reg_nxt <= (others => '0');
+           compare_result_nxt <= reg; 
            state_nxt <= s_compare; 
     end case;
 end process;
 
+reg_nxt <= compare_out when reg < compare_out else reg; 
 
-reg <= reg_nxt when reg < reg_nxt else reg;
 
 
 end Behavioral;
