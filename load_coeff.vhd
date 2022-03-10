@@ -136,14 +136,14 @@ end component;
 --    signal ctrl_nxt     : std_logic_vector(4 downto 0);
     signal start_store  : std_logic;
     
-    signal keep1        : std_logic_vector(13 downto 0);
-    signal keep2        : std_logic_vector(13 downto 0);
-    signal keep3        : std_logic_vector(13 downto 0);
-    signal keep4        : std_logic_vector(13 downto 0);
-    signal keep5        : std_logic_vector(13 downto 0);
-    signal keep6        : std_logic_vector(13 downto 0);
-    signal keep7        : std_logic_vector(13 downto 0);
-    signal keep8        : std_logic_vector(13 downto 0);
+--    signal keep1        : std_logic_vector(13 downto 0);
+--    signal keep2        : std_logic_vector(13 downto 0);
+--    signal keep3        : std_logic_vector(13 downto 0);
+--    signal keep4        : std_logic_vector(13 downto 0);
+--    signal keep5        : std_logic_vector(13 downto 0);
+--    signal keep6        : std_logic_vector(13 downto 0);
+--    signal keep7        : std_logic_vector(13 downto 0);
+--    signal keep8        : std_logic_vector(13 downto 0);
 
     signal coeff_in     : std_logic_vector(31 downto 0);
     --signal data_in      : std_logic_vector(31 downto 0);
@@ -205,7 +205,7 @@ begin
     counter_2_nxt <= (others => '0');
     --address_nxt <= (others => '0');
  
-    --send_ctr_nxt <= send_ctr;
+    send_ctr_nxt <= send_ctr;
     
 
     address <= (others => '0');

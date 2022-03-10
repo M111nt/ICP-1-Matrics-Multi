@@ -20,17 +20,17 @@ architecture Behavioral of top is
 
 
 
---  component CPAD_S_74x50u_IN            --input PAD
---    port (
---      COREIO : out std_logic;
---      PADIO  : in  std_logic);
---  end component;
+  component CPAD_S_74x50u_IN            --input PAD
+    port (
+      COREIO : out std_logic;
+      PADIO  : in  std_logic);
+  end component;
 
---  component CPAD_S_74x50u_OUT           --output PAD
---    port (
---      COREIO : in  std_logic;
---      PADIO  : out std_logic);
---  end component;
+  component CPAD_S_74x50u_OUT           --output PAD
+    port (
+      COREIO : in  std_logic;
+      PADIO  : out std_logic);
+  end component;
 
 --    component SRAM_SP_WRAPPER
 --      port (
@@ -159,7 +159,12 @@ end component;
 
 
 --signal---------------------------------------------------------------------------------------------------------------------
---signal clki, reseti    : std_logic;  
+signal clk, reset      : std_logic;
+signal starti          : std_logic; 
+signal dataInputi      : std_logic_vector(13 downto 0);
+signal dataOutputi     : std_logic_vector(18 downto 0);
+signal ld2mem_o        : std_logic;
+signal ld2reg_o        : std_logic;
 --signal load_en          : std_logic;
 --signal coeff_in         : std_logic_vector(31 downto 0);
 --signal ld2mem_o         : std_logic;
@@ -324,4 +329,49 @@ port map(
         compare_result  => compare_result   
 );
 
+clkpad : CPAD_S_74x50u_IN
+  port map (
+    COREIO => clk,
+    PADIO  => clki
+    );
+resetpad : CPAD_S_74x50u_IN
+  port map (
+    COREIO => reset,
+    PADIO  => reseti
+    );   
+ startpad : CPAD_S_74x50u_IN
+  port map (
+    COREIO => starti,
+    PADIO  => start
+    );
+InPads : for i in 0 to 13 generate
+  InPad : CPAD_S_74x50u_IN
+    port map (
+      COREIO => dataInputi(i),
+      PADIO  => dataInput(i)
+      );
+end generate InPads;
+
+OutPads : for i in 0 to 18 generate
+  OutPad : CPAD_S_74x50u_OUT
+    port map (
+      COREIO => dataOutputi(i),
+      PADIO  => dataOutput(i)
+      );
+end generate OutPads;
+ld2mem_pad : CPAD_S_74x50u_OUT
+ port map (
+   COREIO => ld2mem_o,
+   PADIO  => ld2mem
+   );
+ld2reg_pad : CPAD_S_74x50u_OUT
+ port map (
+   COREIO => ld2reg_o,
+   PADIO  => ld2reg
+   );
+
+
+
 end Behavioral;
+
+

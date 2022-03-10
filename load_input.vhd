@@ -137,7 +137,7 @@ begin
             load_done <= '0';
             ctrl_input <= (others => '0');
             input <= (others => '0');
-            --counter_nxt <= counter;
+            counter_nxt <= counter;
             send_ctrl_nxt <= send_ctrl;
 
 
