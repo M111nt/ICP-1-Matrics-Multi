@@ -9,16 +9,12 @@ entity load_coeff is
   Port (
      clk, reset     : in std_logic;
     
-    --signal from controller to load_coeff----------------------------------
     ldcoeff_enable  : in std_logic;
     --coeff from memory-----------------------------------------------------
-    --coeff_in        : in std_logic_vector(31 downto 0);
     coeff_read      : in std_logic_vector(13 downto 0);
     
     --enable txt file to memory---------------------------------------------
     ld2mem          : out std_logic;
-    --to memory-------------------------------------------------------------
-    --address         : out std_logic_vector(7 downto 0);
     --to controller---------------------------------------------------------
     ctrl_coeff      : out std_logic_vector(5 downto 0);
     coeff           : out std_logic_vector(6 downto 0);
@@ -57,10 +53,6 @@ end component;
     signal counter_nxt  : std_logic_vector(4 downto 0) := (others => '0');
     signal counter_2    : std_logic_vector(4 downto 0) := (others => '0');
     signal counter_2_nxt: std_logic_vector(4 downto 0) := (others => '0');
-    
-    
---    signal address_reg  : std_logic_vector(4 downto 0) := (others => '0');
---    signal address_nxt  : std_logic_vector(4 downto 0) := (others => '0');
     
     signal send_ctr     : std_logic_vector(4 downto 0) := (others => '0');
     signal send_ctr_nxt : std_logic_vector(4 downto 0) := (others => '0');
@@ -130,31 +122,15 @@ end component;
     signal coeff30_nxt  : std_logic_vector(6 downto 0);
     signal coeff31_nxt  : std_logic_vector(6 downto 0);
     signal coeff32_nxt  : std_logic_vector(6 downto 0);
---    signal coeff_test1  : std_logic_vector(6 downto 0);
---    signal coeff_test2  : std_logic_vector(6 downto 0);
---    signal ctrl         : std_logic_vector(4 downto 0);    
---    signal ctrl_nxt     : std_logic_vector(4 downto 0);
     signal start_store  : std_logic;
     
---    signal keep1        : std_logic_vector(13 downto 0);
---    signal keep2        : std_logic_vector(13 downto 0);
---    signal keep3        : std_logic_vector(13 downto 0);
---    signal keep4        : std_logic_vector(13 downto 0);
---    signal keep5        : std_logic_vector(13 downto 0);
---    signal keep6        : std_logic_vector(13 downto 0);
---    signal keep7        : std_logic_vector(13 downto 0);
---    signal keep8        : std_logic_vector(13 downto 0);
-
     signal coeff_in     : std_logic_vector(31 downto 0);
-    --signal data_in      : std_logic_vector(31 downto 0);
     signal choose       : std_logic;
     signal address      : std_logic_vector(7 downto 0);
     signal address_out  : std_logic_vector(7 downto 0);
     signal RY_ram       : std_logic;
     signal dataxdi      : std_logic_vector(31 downto 0);
     
---    signal test : std_logic_vector(13 downto 0);
-
 
 begin
 Ram_coeff: SRAM_SP_WRAPPER
@@ -168,22 +144,14 @@ port map(
     DataxDO            => coeff_in 
     );
 
---dataxdi <= "000000000000000000" & coeff_read;
-
-
 --state contrl--------------------------------
 process(clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_initial; 
-        --counter <= (others => '0');
-        --address_reg <= (others => '0');
         send_ctr <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-
-        --counter <= counter_nxt;
-        --address_reg <= address_nxt;
         send_ctr <= send_ctr_nxt;
     end if;
 
@@ -191,7 +159,6 @@ end process;
 
 
 --state machine--------------------------------------------
---, ldcoeff_enable, address_reg, send_ctr
 process(state_reg, counter, ldcoeff_enable, send_ctr, counter_2)
 begin
     choose <= '1';
@@ -203,7 +170,6 @@ begin
     ldcoeff_done <= '0';
     counter_nxt <= (others => '0'); 
     counter_2_nxt <= (others => '0');
-    --address_nxt <= (others => '0');
  
     send_ctr_nxt <= send_ctr;
     
@@ -211,7 +177,6 @@ begin
     address <= (others => '0');
     
     start_store <= '0';
---    ctrl_nxt <= ctrl;
 
     case state_reg is 
         when s_initial => 
@@ -220,10 +185,6 @@ begin
             ldcoeff_done <= '0'; 
             ld2mem <= '0';
             counter_nxt <= (others => '0');
---            address_s <= (others => '0');
-            
-            --address_reg <= (others => '0');
-            --address_nxt <= (others => '0');
             send_ctr_nxt <= (others => '0');
             
             if ldcoeff_enable = '1' then 
@@ -233,7 +194,6 @@ begin
             end if;
         
         when s_load => --load coefficients from txt to memory
-            --ldcoeff_done <= '0';
             counter_nxt <= counter + 1;
             choose <= '0';--write
             address <= "000" & counter;
@@ -249,11 +209,7 @@ begin
         when s_keep =>  
         choose <= '1';--read
         address <= "000" & counter_2;
-        --ctrl_nxt <= ctrl + 1;
         counter_2_nxt <= counter_2 + 1;
-        --start_store <= '1';
-        --address_nxt <= address_reg + 1;
-        
         if counter_2 > 15 then 
             state_nxt <= s_send;
         else 
@@ -345,17 +301,6 @@ generic map(N => 5)
             clk     =>clk,
             reset   =>reset
       );
-
---address_ctrl: FF
---  generic map(N => 5)
---  port map(   D     =>address_nxt,
---              Q     =>address_reg,
---            clk     =>clk,
---            reset   =>reset
---      );
-
-
-
 counter_2_ff: FF 
   generic map(N => 5)
   port map(   D     =>counter_2_nxt,
@@ -363,8 +308,6 @@ counter_2_ff: FF
             clk     =>clk,
             reset   =>reset
       );
-
-
 coeff_01: FF 
   generic map(N => 7)
   port map(   D     =>coeff01_nxt,
@@ -589,59 +532,6 @@ coeff_32: FF
             clk     =>clk,
             reset   =>reset
       );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 end Behavioral;

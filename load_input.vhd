@@ -45,8 +45,6 @@ end component;
     
     signal send_ctrl    : unsigned(4 downto 0) := (others => '0');
     signal send_ctrl_nxt: unsigned(4 downto 0) := (others => '0');
-    --signal row          : std_logic_vector(1 downto 0);
-    --signal row_nxt      : std_logic_vector(1 downto 0);
     
     signal input01      : std_logic_vector(7 downto 0);
     signal input02      : std_logic_vector(7 downto 0);
@@ -80,7 +78,6 @@ end component;
     signal input30      : std_logic_vector(7 downto 0);
     signal input31      : std_logic_vector(7 downto 0);
     signal input32      : std_logic_vector(7 downto 0);   
-    --signal input_test   : std_logic_vector(7 downto 0); 
     
     signal input01_nxt  : std_logic_vector(7 downto 0);
     signal input02_nxt  : std_logic_vector(7 downto 0);
@@ -122,32 +119,26 @@ process (clk, reset)
 begin
     if reset = '1' then 
         state_reg <= s_initial; 
-        --counter <= (others => '0');
         send_ctrl <= (others => '0');
     elsif (clk'event and clk = '1') then 
         state_reg <= state_nxt; 
-        --counter <= counter_nxt;
         send_ctrl <= send_ctrl_nxt;
     end if;         
 end process;    
 
 process(state_reg, ldinput_en, counter, column, send_ctrl, load_en) 
 begin 
-            --ldinput_done <= '0';
             load_done <= '0';
             ctrl_input <= (others => '0');
             input <= (others => '0');
             counter_nxt <= counter;
             send_ctrl_nxt <= send_ctrl;
 
-
-
     case state_reg is 
         when s_initial => 
             ld2reg <= '0';
             ctrl_input <= (others => '0');  
             input <= (others => '0');     
-            --ldinput_done <= '0';
             load_done <= '0';
             counter_nxt <= (others => '0');
             send_ctrl_nxt <= (others => '0');
@@ -160,41 +151,6 @@ begin
         when s_keep => 
             ld2reg <= '1';
             counter_nxt <= counter + 1;
---            case counter is 
---                when "00000" => input01_nxt <= input_in; counter_nxt <= "00001"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00001" => input02_nxt <= input_in; counter_nxt <= "00010"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00010" => input03_nxt <= input_in; counter_nxt <= "00011"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00011" => input04_nxt <= input_in; counter_nxt <= "00100"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00100" => input05_nxt <= input_in; counter_nxt <= "00101"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00101" => input06_nxt <= input_in; counter_nxt <= "00110"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00110" => input07_nxt <= input_in; counter_nxt <= "00111"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "00111" => input08_nxt <= input_in; counter_nxt <= "01000"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01000" => input09_nxt <= input_in; counter_nxt <= "01001"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01001" => input10_nxt <= input_in; counter_nxt <= "01010"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01010" => input11_nxt <= input_in; counter_nxt <= "01011"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01011" => input12_nxt <= input_in; counter_nxt <= "01100"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01100" => input13_nxt <= input_in; counter_nxt <= "01101"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01101" => input14_nxt <= input_in; counter_nxt <= "01110"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01110" => input15_nxt <= input_in; counter_nxt <= "01111"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "01111" => input16_nxt <= input_in; counter_nxt <= "10000"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10000" => input17_nxt <= input_in; counter_nxt <= "10001"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10001" => input18_nxt <= input_in; counter_nxt <= "10010"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10010" => input19_nxt <= input_in; counter_nxt <= "10011"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10011" => input20_nxt <= input_in; counter_nxt <= "10100"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10100" => input21_nxt <= input_in; counter_nxt <= "10101"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10101" => input22_nxt <= input_in; counter_nxt <= "10110"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10110" => input23_nxt <= input_in; counter_nxt <= "10111"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "10111" => input24_nxt <= input_in; counter_nxt <= "11000"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11000" => input25_nxt <= input_in; counter_nxt <= "11001"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11001" => input26_nxt <= input_in; counter_nxt <= "11010"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11010" => input27_nxt <= input_in; counter_nxt <= "11011"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11011" => input28_nxt <= input_in; counter_nxt <= "11100"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11100" => input29_nxt <= input_in; counter_nxt <= "11101"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11101" => input30_nxt <= input_in; counter_nxt <= "11110"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11110" => input31_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '0';--state_nxt <= s_keep; 
---                when "11111" => input32_nxt <= input_in; counter_nxt <= "11111"; ldinput_done <= '1';--state_nxt <= s_keep; 
---                when others => input_test <= input_in; ldinput_done <= '0';--state_nxt <= s_keep;
---            end case;
             if load_en = '1' then 
                 state_nxt <= s_send; 
             else 
@@ -249,7 +205,6 @@ begin
                     
                     
                 when "11" => 
-                    --state_nxt <= s_send;
                     case send_ctrl is 
                         when "11000" => ctrl_input <= "0001"; input <= input25; load_done <= '0'; send_ctrl_nxt <= send_ctrl + 1; state_nxt <= s_send;
                         when "11001" => ctrl_input <= "0010"; input <= input26; load_done <= '0'; send_ctrl_nxt <= send_ctrl + 1; state_nxt <= s_send;

@@ -47,7 +47,7 @@ begin
     end if;         
 end process;
 
-state_machine: process (state_reg, max_en, reg) --, reg, reg_nxt, )
+state_machine: process (state_reg, max_en, reg) 
 begin 
     compare_result_nxt <= (others => '0');
     case state_reg is 
@@ -66,7 +66,5 @@ begin
 end process;
 
 reg_nxt <= compare_out when reg < compare_out else reg; 
-
-
 
 end Behavioral;

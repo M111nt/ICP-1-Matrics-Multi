@@ -21,44 +21,29 @@ entity controller is
         ctrl_input      : in std_logic_vector(3 downto 0);
         input           : in std_logic_vector(7 downto 0);
     --number from op---------------------------------------------------------    
-        --data2op_done    : in std_logic; --finish storing data in op
-
-        --out_ready       : in std_logic; --return 4 results to controller
         result1         : in std_logic_vector(18 downto 0);
         result2         : in std_logic_vector(18 downto 0);
         result3         : in std_logic_vector(18 downto 0);
         result4         : in std_logic_vector(18 downto 0);    
-        
 ------------------------------------------------------------------------        
-        
         ldcoeff_enable  : out std_logic;
         ldinput_enable  : out std_logic; 
         load_en         : out std_logic;
         op_en           : out std_logic;
         store_en        : out std_logic; 
-        --ready           : out std_logic; 
         max_en          : out std_logic;
         avg_en          : out std_logic;   
-
     --ld coeff--------------------------------------------------------------       
-        --flag_coeff      : out std_logic; 
     --ld input--------------------------------------------------------------
-        --flag_input      : out std_logic;
         column_out        : out std_logic_vector(1 downto 0);
     --number to op----------------------------------------------------------    
-        --begin_coeff2op  : out std_logic;
-        --flag_coeff2op   : out std_logic;
-        --flag_data2op   : out std_logic;
         data2op         : out std_logic_vector(7 downto 0);
-        --begin_input2op  : out std_logic;
-        --input2op        : out std_logic_vector(7 downto 0)
         address2op      : out std_logic_vector(5 downto 0);
     ----------------------------------------------------------------
         result1_2store  : out std_logic_vector(18 downto 0);
         result2_2store  : out std_logic_vector(18 downto 0);
         result3_2store  : out std_logic_vector(18 downto 0);
         result4_2store  : out std_logic_vector(18 downto 0)
-        --mean_out        : out std_logic_vector(20 downto 0)  
     );
 
 end controller;
@@ -71,7 +56,6 @@ architecture Behavioral of controller is
     signal op_controller        : std_logic;
 
 --state machine----------------------------------------------------
-    --signal column : std_logic_vector(2 downto 0);
 
     type state_type is (s_coeff2mem, s_input2reg, s_idle, s_load, s_op, s_store, s_max, s_avg);
     signal state_reg, state_nxt : state_type;
@@ -168,9 +152,7 @@ architecture Behavioral of controller is
 
 --op counter------------------------------------------------------------
     signal counter, counter_nxt   : std_logic_vector(5 downto 0); 
-    --signal counter_in, counter_in_nxt   : std_logic_vector(3 downto 0);
     signal start_count                  : std_logic;
-    --signal op_en_in                     : std_logic;
 --store data-------------------------------------------------------------
     signal column       : std_logic_vector(1 downto 0);
     signal column_nxt   : std_logic_vector(1 downto 0);
@@ -181,22 +163,16 @@ architecture Behavioral of controller is
     signal result3_reg  : std_logic_vector(18 downto 0);
     signal result4_reg  : std_logic_vector(18 downto 0);
     
-    
-    
-    
     signal mean1    : std_logic_vector(18 downto 0);
     signal mean2    : std_logic_vector(18 downto 0);
     signal mean3    : std_logic_vector(18 downto 0);
     signal mean4    : std_logic_vector(18 downto 0);
-    
 --mean--------------------------------------------------------------------
-
     signal mean_reg : std_logic_vector(20 downto 0);
     signal mean_out : std_logic_vector(20 downto 0);    
-    
 ------------------------------------------------------------------------
-begin
 
+begin
 --state ctrl-----------------------------------
 process (clk, reset)
 begin
@@ -237,17 +213,12 @@ begin
     result2_reg <= (others => '0');
     result3_reg <= (others => '0');
     result4_reg <= (others => '0');
-    --column_out <= (others => '0');
-    --column_nxt <= column;
-    column_nxt <= column;
 
+    column_nxt <= column;
 
     case state_reg is 
         when s_coeff2mem => 
---            ldcoeff_enable <= '1'; 
---            ldcoeff_controller <= '1';
             ldinput_enable <= '0'; 
-            --column <= "00";
             column_nxt <= "00";
             if ldcoeff_done = '1' then 
                 state_nxt <= s_input2reg;
@@ -261,8 +232,6 @@ begin
             ldcoeff_enable <= '0';
             ldcoeff_controller <= '0';
             ldinput_enable <= '1'; 
-            --column <= column_nxt;
-            --control the result of mean         
             if ldinput_done = '1' then 
                 state_nxt <= s_idle;
             else
@@ -285,8 +254,6 @@ begin
         when s_load => 
             load_en <= '1'; 
             ldinput_controller <= '1';
---            column <= column_nxt;
---            column_out <= column_nxt;
             op_en <= '0'; 
             op_controller <= '0';  
             store_en <= '0';
@@ -319,7 +286,6 @@ begin
             store_en <= '1';
             max_en <= '0';
             avg_en <= '0';
-            --if out_ready = '1' then 
             result1_reg <= result1;
             result2_reg <= result2;
             result3_reg <= result3;
@@ -378,12 +344,6 @@ begin
                         
                      when others => state_nxt <= s_store;   
                 end case;
---            else
---                result1_2store <= (others => '0');
---                result2_2store <= (others => '0');
---                result3_2store <= (others => '0');
---                result4_2store <= (others => '0');
---            end if;
             
 
         
@@ -537,43 +497,42 @@ begin
 
     if ldcoeff_controller = '1' then 
         case ctrl_coeff is 
-            when "000001" => coeff01_nxt <= coeff; --flag_coeff <= '0'; --start, parity
-            when "000010" => coeff02_nxt <= coeff; --flag_coeff <= '0';
-            when "000011" => coeff03_nxt <= coeff; --flag_coeff <= '0';
-            when "000100" => coeff04_nxt <= coeff; --flag_coeff <= '0';
-            when "000101" => coeff05_nxt <= coeff; --flag_coeff <= '0';
-            when "000110" => coeff06_nxt <= coeff; --flag_coeff <= '0';
-            when "000111" => coeff07_nxt <= coeff; --flag_coeff <= '0';
-            when "001000" => coeff08_nxt <= coeff; --flag_coeff <= '0';
-            when "001001" => coeff09_nxt <= coeff; --flag_coeff <= '0';
-            when "001010" => coeff10_nxt <= coeff; --flag_coeff <= '0';
-            when "001011" => coeff11_nxt <= coeff; --flag_coeff <= '0';
-            when "001100" => coeff12_nxt <= coeff; --flag_coeff <= '0';
-            when "001101" => coeff13_nxt <= coeff; --flag_coeff <= '0';
-            when "001110" => coeff14_nxt <= coeff; --flag_coeff <= '0';
-            when "001111" => coeff15_nxt <= coeff; --flag_coeff <= '0';
-            when "010000" => coeff16_nxt <= coeff; --flag_coeff <= '0';
-            when "010001" => coeff17_nxt <= coeff; --flag_coeff <= '0';
-            when "010010" => coeff18_nxt <= coeff; --flag_coeff <= '0';
-            when "010011" => coeff19_nxt <= coeff; --flag_coeff <= '0';
-            when "010100" => coeff20_nxt <= coeff; --flag_coeff <= '0';
-            when "010101" => coeff21_nxt <= coeff; --flag_coeff <= '0';
-            when "010110" => coeff22_nxt <= coeff; --flag_coeff <= '0';
-            when "010111" => coeff23_nxt <= coeff; --flag_coeff <= '0';
-            when "011000" => coeff24_nxt <= coeff; --flag_coeff <= '0';
-            when "011001" => coeff25_nxt <= coeff; --flag_coeff <= '0';
-            when "011010" => coeff26_nxt <= coeff; --flag_coeff <= '0';
-            when "011011" => coeff27_nxt <= coeff; --flag_coeff <= '0';
-            when "011100" => coeff28_nxt <= coeff; --flag_coeff <= '0';
-            when "011101" => coeff29_nxt <= coeff; --flag_coeff <= '0';
-            when "011110" => coeff30_nxt <= coeff; --flag_coeff <= '0';
-            when "011111" => coeff31_nxt <= coeff; --flag_coeff <= '0';
-            when "100000" => coeff32_nxt <= coeff; --flag_coeff <= '1';
-            when others => coeff_test <= (others => '0');--flag_coeff <= '1';
+            when "000001" => coeff01_nxt <= coeff; 
+            when "000010" => coeff02_nxt <= coeff; 
+            when "000011" => coeff03_nxt <= coeff; 
+            when "000100" => coeff04_nxt <= coeff; 
+            when "000101" => coeff05_nxt <= coeff; 
+            when "000110" => coeff06_nxt <= coeff; 
+            when "000111" => coeff07_nxt <= coeff; 
+            when "001000" => coeff08_nxt <= coeff; 
+            when "001001" => coeff09_nxt <= coeff; 
+            when "001010" => coeff10_nxt <= coeff; 
+            when "001011" => coeff11_nxt <= coeff; 
+            when "001100" => coeff12_nxt <= coeff; 
+            when "001101" => coeff13_nxt <= coeff; 
+            when "001110" => coeff14_nxt <= coeff; 
+            when "001111" => coeff15_nxt <= coeff; 
+            when "010000" => coeff16_nxt <= coeff; 
+            when "010001" => coeff17_nxt <= coeff; 
+            when "010010" => coeff18_nxt <= coeff; 
+            when "010011" => coeff19_nxt <= coeff; 
+            when "010100" => coeff20_nxt <= coeff; 
+            when "010101" => coeff21_nxt <= coeff; 
+            when "010110" => coeff22_nxt <= coeff; 
+            when "010111" => coeff23_nxt <= coeff; 
+            when "011000" => coeff24_nxt <= coeff; 
+            when "011001" => coeff25_nxt <= coeff; 
+            when "011010" => coeff26_nxt <= coeff; 
+            when "011011" => coeff27_nxt <= coeff; 
+            when "011100" => coeff28_nxt <= coeff; 
+            when "011101" => coeff29_nxt <= coeff; 
+            when "011110" => coeff30_nxt <= coeff; 
+            when "011111" => coeff31_nxt <= coeff; 
+            when "100000" => coeff32_nxt <= coeff; 
+            when others => coeff_test <= (others => '0');
         end case;
     else 
         coeff_test <= (others => '0');
-        --flag_coeff <= '0';
     end if;
        
 end process;
@@ -593,25 +552,24 @@ begin
     
     if ldinput_controller = '1' then 
         case ctrl_input is
-            when "0001" => input01_nxt <= input; --flag_input <= '0';
-            when "0010" => input02_nxt <= input; --flag_input <= '0';
-            when "0011" => input03_nxt <= input; --flag_input <= '0';
-            when "0100" => input04_nxt <= input; --flag_input <= '0';
-            when "0101" => input05_nxt <= input; --flag_input <= '0';
-            when "0110" => input06_nxt <= input; --flag_input <= '0';
-            when "0111" => input07_nxt <= input; --flag_input <= '0';
-            when "1000" => input08_nxt <= input; --flag_input <= '1';
-            when others => input_test <= (others =>'0'); --flag_input <= '1';
+            when "0001" => input01_nxt <= input; 
+            when "0010" => input02_nxt <= input; 
+            when "0011" => input03_nxt <= input; 
+            when "0100" => input04_nxt <= input; 
+            when "0101" => input05_nxt <= input; 
+            when "0110" => input06_nxt <= input; 
+            when "0111" => input07_nxt <= input; 
+            when "1000" => input08_nxt <= input; 
+            when others => input_test <= (others =>'0'); 
         end case;
     else 
         input_test <= (others => '0'); 
-        --flag_input <= '0'; 
     end if;
 
 end process;
 
 --op send data----------------------------------------------------------------------
-op_counter : process(clk, reset, start_count, counter_nxt)-- counter_in_nxt
+op_counter : process(clk, reset, start_count, counter_nxt)
 begin 
     if reset = '1' then 
         counter <= "000001"; 
@@ -625,21 +583,18 @@ begin
 
 end process;
 
-op_send: process(op_controller, counter, --data2op_done,
+op_send: process(op_controller, counter, 
                 coeff01, coeff02, coeff03, coeff04, coeff05, coeff06, coeff07, coeff08, coeff09, coeff10, 
                 coeff11, coeff12, coeff13, coeff14,coeff15, coeff16, coeff17, coeff18, coeff19, coeff20, 
                 coeff21, coeff22, coeff23, coeff24, coeff25, coeff26, coeff27, coeff28, coeff29, coeff30, 
                 coeff31, coeff32, 
                 input01, input02, input03, input04, input05, input06, input07, input08)
 begin 
-    --counter_nxt <= counter;
     address2op <= "000001";
     data2op <= (others => '0');
     counter_nxt <= "000001";
     if op_controller ='1' then 
         start_count <= '1'; --contrl the op counter
---        if data2op_done = '0' then
---            flag_data2op <= '0';
             case counter is 
                 when "000001" => data2op <= "0" & coeff01; counter_nxt <= counter + "000001"; address2op <= "000001";
                 when "000010" => data2op <= "0" & coeff02; counter_nxt <= counter + "000001"; address2op <= "000010";
@@ -684,29 +639,11 @@ begin
                 when "101000" => data2op <= input08; counter_nxt <= "000001"; address2op <= "101000"; 
                 when others => data2op <= (others => '0'); counter_nxt <= "000001"; address2op <= "000001";        
             end case;
---        else 
-            --data2op <= (others => '0'); 
---            counter_nxt <= "000001";
---            flag_data2op <= '1';
---            address2op <= "000001";
---        end if;
     else 
-        --begin_coeff2op <= '0';
-        --begin_input2op <= '0';
         start_count <= '0';  
     end if;
 
 end process;
 
-
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 end Behavioral;
-
-
-
 
