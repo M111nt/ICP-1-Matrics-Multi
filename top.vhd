@@ -355,7 +355,8 @@ end generate InPads;
 OutPads : for i in 0 to 18 generate
   OutPad : CPAD_S_74x50u_OUT
     port map (
-      COREIO => dataOutputi(i),
+      COREIO => compare_result(i),
+      --COREIO => dataOutputi(i),
       PADIO  => dataOutput(i)
       );
 end generate OutPads;
